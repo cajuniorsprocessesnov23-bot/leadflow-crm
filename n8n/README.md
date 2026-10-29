@@ -20,9 +20,9 @@ In Supabase Dashboard → Edge Functions → Secrets, add:
 The CRM calls the deployed `n8n-dispatch` Supabase Edge Function with the signed-in user's JWT. The function verifies the user and sends the event to n8n with `x-leadflow-secret`. Credentials are never placed in the browser or committed to GitHub.
 
 ## 3. Current event types
-- `lead.created`: sends a welcome message after a lead is added.
-- `payment.confirmed`: sends a receipt-style confirmation after a collection is recorded.
-- `payment.reminder_due`: sent when a pending balance is recorded/updated. Review this behaviour before activating customer-facing messaging; you may prefer to queue these for a scheduled send instead of sending immediately.
+- `lead.created`: sends a welcome message after a lead is added, only when the lead's **WhatsApp consent** checkbox is checked.
+- `payment.confirmed`: sends a receipt-style confirmation after a collection is recorded, only when consent is checked.
+- `payment.reminder_due`: emitted when a pending balance is recorded/updated, only when consent is checked. The current webhook template sends it immediately; change this to a queue if you want reminders at a scheduled time.
 
 ## 4. Scheduled follow-ups and payment reminders
 This workflow handles event-driven messages. Scheduled follow-ups require a second n8n Schedule Trigger workflow that reads the CRM's due-task rules from Supabase, deduplicates sends, and records the last notification timestamp. Do not activate bulk scheduled sending until a delivery log/idempotency table and customer WhatsApp opt-in checks are in place. LeadFlow's existing due-call schedule is calculated in the frontend and is not yet exposed as a server-side due-task API.
