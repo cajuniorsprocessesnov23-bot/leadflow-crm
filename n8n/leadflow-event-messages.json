@@ -1,0 +1,114 @@
+{
+  "name": "LeadFlow CRM - Event Messages (Twilio WhatsApp)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "leadflow-events",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "lf-webhook",
+      "name": "LeadFlow Event Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -600,
+        0
+      ],
+      "webhookId": "leadflow-events"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\nconst headers = input.headers || {};\nconst secret = $vars.LEADFLOW_WEBHOOK_SECRET;\nif (!secret || headers['x-leadflow-secret'] !== secret) throw new Error('Unauthorized LeadFlow webhook. Configure LEADFLOW_WEBHOOK_SECRET in n8n Variables and use the same value in Supabase secrets.');\nconst event = input.body || input;\nconst p = event.payload || {};\nconst lead = p.lead || {};\nconst phone = String(lead.phone || '').replace(/[\\s().-]/g, '');\nif (!/^\\+[1-9]\\d{7,14}$/.test(phone)) throw new Error('Lead has no valid international phone number. Store phone as +countrycode number.');\nlet body = '';\nif (event.event === 'lead.created') body = 'Hello ' + (lead.name || 'there') + ', thank you for contacting Legal Wegal. We have received your enquiry and our team will follow up with you shortly.';\nelse if (event.event === 'payment.confirmed') body = 'Hello ' + (lead.name || 'there') + ', we have received your payment of ₹' + Number(p.amount || 0).toLocaleString('en-IN') + '. Thank you. Your remaining balance is ₹' + Number(p.pendingPaymentAfter || 0).toLocaleString('en-IN') + '.';\nelse if (event.event === 'payment.reminder_due') body = 'Hello ' + (lead.name || 'there') + ', this is a reminder that ₹' + Number(p.pendingAmount || 0).toLocaleString('en-IN') + ' is pending for your Legal Wegal service. Please contact our team if you have already paid.';\nelse throw new Error('Unsupported LeadFlow event: ' + event.event);\nreturn [{json:{to:'whatsapp:'+phone,body,event:event.event,eventId:event.eventId || ''}}];"
+      },
+      "id": "lf-build-message",
+      "name": "Validate and Build Message",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -340,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.twilio.com/2010-04-01/Accounts/{{$vars.TWILIO_ACCOUNT_SID}}/Messages.json",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "To",
+              "value": "={{ $json.to }}"
+            },
+            {
+              "name": "From",
+              "value": "={{ 'whatsapp:' + $vars.TWILIO_WHATSAPP_FROM.replace(/^whatsapp:/, '') }}"
+            },
+            {
+              "name": "Body",
+              "value": "={{ $json.body }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "id": "lf-twilio-send",
+      "name": "Send WhatsApp via Twilio",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -60,
+        0
+      ],
+      "credentials": {
+        "httpBasicAuth": {
+          "name": "Twilio API Basic Auth"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "LeadFlow Event Webhook": {
+      "main": [
+        [
+          {
+            "node": "Validate and Build Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate and Build Message": {
+      "main": [
+        [
+          {
+            "node": "Send WhatsApp via Twilio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "leadflow-initial",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}
