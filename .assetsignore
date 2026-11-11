@@ -2,3 +2,5 @@
 .github
 wrangler.toml
 .assetsignore
+supabase
+n8n
