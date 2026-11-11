@@ -20,6 +20,8 @@ Deno.serve(async (req: Request) => {
   const requested=body.permissions&&typeof body.permissions==="object"?body.permissions:{};
   const permissions=Object.fromEntries(allowed.map(k=>[k,requested[k]===true]));
   if(role==="admin"&&requested.users_manage===true) permissions.users_manage=false;
+  const commission_rate=Number(body.commission_rate||0);
+  if(!Number.isFinite(commission_rate)||commission_rate<0||commission_rate>100) return new Response(JSON.stringify({error:"Commission rate must be between 0 and 100"}),{status:400,headers:{...corsHeaders,"Content-Type":"application/json"}});
   const admin=createClient(url,serviceKey,{auth:{persistSession:false}});
   const {data,error}=await admin.auth.admin.createUser({email,password,email_confirm:true,user_metadata:{full_name:fullName}});
   if(error) return new Response(JSON.stringify({error:error.message}),{status:400,headers:{...corsHeaders,"Content-Type":"application/json"}});
