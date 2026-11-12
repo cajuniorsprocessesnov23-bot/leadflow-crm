@@ -50,6 +50,14 @@ Deno.serve(async (req: Request) => {
     const d = dbg.body?.data || {};
     const scopes: Array<{ scope: string; target_ids?: string[] }> = d.granular_scopes || [];
     const wabaIds = [...new Set(scopes.filter((s) => s.scope.startsWith("whatsapp_business")).flatMap((s) => s.target_ids || []))];
+    // Fallback: a token granted business-wide lists no target ids, so ask the business itself.
+    const businessId = typeof input?.business_id === "string" && /^\d+$/.test(input.business_id) ? input.business_id : null;
+    if (!wabaIds.length && businessId) {
+      for (const edge of ["owned_whatsapp_business_accounts", "client_whatsapp_business_accounts"]) {
+        const r = await graph(`${businessId}/${edge}?fields=id,name&limit=50`, token);
+        if (r.ok) for (const w of r.body?.data || []) if (!wabaIds.includes(w.id)) wabaIds.push(w.id);
+      }
+    }
 
     const accounts = [];
     for (const id of wabaIds) {
