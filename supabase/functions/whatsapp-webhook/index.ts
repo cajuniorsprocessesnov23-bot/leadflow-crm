@@ -92,6 +92,8 @@ Deno.serve(async (req: Request) => {
     for (const change of entry?.changes ?? []) {
       if (change?.field !== "messages") continue;
       const v = change.value ?? {};
+      // The Meta app may serve other WhatsApp numbers too: only handle Legal Wegal's number.
+      if (String(v.metadata?.phone_number_id ?? "") !== PHONE_NUMBER_ID) continue;
 
       // ---- Delivery statuses for messages we sent ----
       for (const s of v.statuses ?? []) {
