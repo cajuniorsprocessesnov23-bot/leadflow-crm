@@ -62,6 +62,16 @@ Deno.serve(async (req: Request) => {
       return json({ ok: true, waba: waba.ok ? waba.body : { error: waba.body?.error?.message }, phone: phone.ok ? phone.body : { error: phone.body?.error?.message }, subscribed_apps: apps.ok ? (apps.body?.data || []).map((a: { whatsapp_business_api_data?: { name?: string; id?: string } }) => a.whatsapp_business_api_data?.name || a.whatsapp_business_api_data?.id) : { error: apps.body?.error?.message } });
     }
 
+    // Subscribe this token's Meta app to the legal wegal WhatsApp account, so Meta sends
+    // its message/status webhooks to the app's callback URL (our whatsapp-webhook function).
+    if (action === "subscribe_app") {
+      const r = await fetch(`${GRAPH}/${WABA_ID}/subscribed_apps`, { method: "POST", headers: { Authorization: `Bearer ${token}` } });
+      const body = await r.json().catch(() => ({}));
+      if (!r.ok) return json({ error: body?.error?.message || "Meta refused the subscription", code: body?.error?.code }, 400);
+      const apps = await graph(`${WABA_ID}/subscribed_apps`, token);
+      return json({ ok: true, result: body, subscribed_apps: (apps.body?.data || []).map((a: { whatsapp_business_api_data?: { name?: string; id?: string } }) => a.whatsapp_business_api_data || a) });
+    }
+
     // One test message from +91 93700 77727 to a number the Super Admin types in.
     // template: an APPROVED template name (business-initiated); text: free-form, only
     // delivered if that person messaged the business in the last 24 hours.
