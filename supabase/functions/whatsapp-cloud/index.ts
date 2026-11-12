@@ -1,10 +1,13 @@
 // LeadFlow CRM – WhatsApp via Meta Cloud API (no Twilio).
-// Step 1 of the WhatsApp build: a read-only "discover" action that reports which
-// WhatsApp Business Accounts and phone numbers the saved token can use.
+// Super Admin tools for the WhatsApp build: "discover" (which account/number the token
+// can use), "templates" (approved templates) and "send_test" (one test message).
 // Secrets: WHATSAPP_ACCESS_TOKEN (system user token). Never returned or logged.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const GRAPH = "https://graph.facebook.com/v24.0";
+// legal wegal, +91 93700 77727 (found with the discover action on 2026-11-13). Not secret.
+const WABA_ID = "927100876842881";
+const PHONE_NUMBER_ID = "1055145887685477";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -42,6 +45,36 @@ Deno.serve(async (req: Request) => {
     if (!token) return json({ error: "WHATSAPP_ACCESS_TOKEN is not set in Supabase Edge Function secrets." }, 503);
     const input = await req.json().catch(() => ({}));
     const action = input?.action || "discover";
+
+    // Approved message templates on the legal wegal WhatsApp account (read-only).
+    if (action === "templates") {
+      const t = await graph(`${WABA_ID}/message_templates?fields=name,status,category,language&limit=100`, token);
+      if (!t.ok) return json({ ok: false, error: t.body?.error?.message || "Could not list templates." }, 502);
+      return json({ ok: true, templates: t.body?.data ?? [] });
+    }
+
+    // One test message from +91 93700 77727 to a number the Super Admin types in.
+    // template: an APPROVED template name (business-initiated); text: free-form, only
+    // delivered if that person messaged the business in the last 24 hours.
+    if (action === "send_test") {
+      const to = String(input?.to || "").replace(/[^\d]/g, "");
+      if (!/^[1-9]\d{9,14}$/.test(to)) return json({ error: "Give the number with country code, e.g. 919876543210." }, 400);
+      let message: Record<string, unknown>;
+      if (typeof input?.template === "string" && /^[a-z0-9_]{1,512}$/.test(input.template)) {
+        message = { type: "template", template: { name: input.template, language: { code: typeof input?.language === "string" ? input.language : "en_US" } } };
+      } else if (typeof input?.text === "string" && input.text.trim()) {
+        message = { type: "text", text: { body: input.text.trim().slice(0, 1000) } };
+      } else return json({ error: "Give either template or text." }, 400);
+      const r = await fetch(`${GRAPH}/${PHONE_NUMBER_ID}/messages`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ messaging_product: "whatsapp", recipient_type: "individual", to, ...message }),
+      });
+      const body = await r.json().catch(() => ({}));
+      if (!r.ok) return json({ ok: false, status: r.status, error: body?.error?.message || "Meta rejected the message.", code: body?.error?.code ?? null, details: body?.error?.error_data?.details ?? null }, 502);
+      return json({ ok: true, message_id: body?.messages?.[0]?.id ?? null, status: body?.messages?.[0]?.message_status ?? "accepted" });
+    }
+
     if (action !== "discover") return json({ error: "Unsupported action." }, 400);
 
     // Which WhatsApp Business Accounts was this token granted? (debug_token lists them per permission)
