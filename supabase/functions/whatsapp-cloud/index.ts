@@ -53,6 +53,15 @@ Deno.serve(async (req: Request) => {
       return json({ ok: true, templates: t.body?.data ?? [] });
     }
 
+    // Why might messages not be delivered? Meta's health status for the account and
+    // number (can_send_message + reasons such as a missing payment method). Read-only.
+    if (action === "diagnose") {
+      const waba = await graph(`${WABA_ID}?fields=id,name,account_review_status,business_verification_status,health_status`, token);
+      const phone = await graph(`${PHONE_NUMBER_ID}?fields=id,display_phone_number,status,name_status,account_mode,quality_rating,messaging_limit_tier,platform_type,code_verification_status,health_status`, token);
+      const apps = await graph(`${WABA_ID}/subscribed_apps`, token);
+      return json({ ok: true, waba: waba.ok ? waba.body : { error: waba.body?.error?.message }, phone: phone.ok ? phone.body : { error: phone.body?.error?.message }, subscribed_apps: apps.ok ? (apps.body?.data || []).map((a: { whatsapp_business_api_data?: { name?: string; id?: string } }) => a.whatsapp_business_api_data?.name || a.whatsapp_business_api_data?.id) : { error: apps.body?.error?.message } });
+    }
+
     // One test message from +91 93700 77727 to a number the Super Admin types in.
     // template: an APPROVED template name (business-initiated); text: free-form, only
     // delivered if that person messaged the business in the last 24 hours.
