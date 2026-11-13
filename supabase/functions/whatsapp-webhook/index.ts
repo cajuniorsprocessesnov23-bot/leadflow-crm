@@ -82,8 +82,8 @@ Deno.serve(async (req: Request) => {
       await db.from("whatsapp_messages").insert({
         lead_id: leadId, recipient_phone: to, recipient_kind: "client", message_key: key, params: payload,
         status: r.ok ? "sent" : "failed", wamid: j?.messages?.[0]?.id ?? null, sent_at: r.ok ? new Date().toISOString() : null,
-        failed_at: r.ok ? null : new Date().toISOString(), error_code: r.ok ? null : String(j?.error?.code ?? r.status),
-        error_detail: r.ok ? null : String(j?.error?.message ?? "").slice(0, 500), attempts: 1,
+        failed_at: r.ok ? null : new Date().toISOString(), error_code: r.ok ? "" : String(j?.error?.code ?? r.status),
+        error_detail: r.ok ? "" : String(j?.error?.message ?? "").slice(0, 500), attempts: 1,
       });
     } catch (e) { console.error("reply failed", e); }
   };
@@ -133,8 +133,8 @@ Deno.serve(async (req: Request) => {
           }
         }
         const { data: inb } = await db.from("whatsapp_inbound").insert({
-          wamid: msg.id, from_phone: from, lead_id: leadId, message_type: msg.type, body: text ?? buttonText,
-          button_payload: payloadId, context_wamid: ctx, raw: msg,
+          wamid: msg.id, from_phone: from, lead_id: leadId, message_type: String(msg.type ?? ""), body: String(text ?? buttonText ?? ""),
+          button_payload: String(payloadId ?? ""), context_wamid: String(ctx ?? ""), raw: msg,
         }).select("id").single();
         if (!inb) continue; // already received (Meta retries the same message) or could not be stored
 
@@ -149,7 +149,7 @@ Deno.serve(async (req: Request) => {
           await setLead({ whatsapp_opt_in: false, whatsapp_opted_out_at: nowIso, whatsapp_optout_reason: "Client replied STOP" });
           await send(from, { type: "text", text: { body: TXT.stop } }, "ack_stop", leadId); action = "opted_out";
         } else if (word === "start") {
-          await setLead({ whatsapp_opt_in: true, whatsapp_opted_out_at: null, whatsapp_optout_reason: null });
+          await setLead({ whatsapp_opt_in: true, whatsapp_opted_out_at: null, whatsapp_optout_reason: "" });
           await send(from, { type: "text", text: { body: TXT.start } }, "ack_start", leadId); action = "opted_in";
         } else if (payloadId && SLOTS.some((s) => s.id === payloadId)) {
           const s = SLOTS.find((x) => x.id === payloadId)!;

@@ -1,7 +1,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const corsHeaders = {"Access-Control-Allow-Origin":"*","Access-Control-Allow-Headers":"authorization, x-client-info, apikey, content-type","Access-Control-Allow-Methods":"POST, OPTIONS"};
 // undefined = not sent (keep current), null = clear, string = digits with country code, false = invalid
-function normWa(v:unknown):string|null|undefined|false{ if(v===undefined) return undefined; const d=String(v??"").replace(/\D/g,""); if(!d) return null; if(d.length===10) return "91"+d; if(d.length===12&&d.startsWith("91")) return d; if(d.length>=11&&d.length<=15) return d; return false; }
+function normWa(v:unknown):string|null|undefined|false{ if(v===undefined) return undefined; const d=String(v??"").replace(/\D/g,""); if(!d) return ""; if(d.length===10) return "91"+d; if(d.length===12&&d.startsWith("91")) return d; if(d.length>=11&&d.length<=15) return d; return false; }
 Deno.serve(async (req: Request) => {
  if(req.method==="OPTIONS") return new Response("ok",{headers:corsHeaders});
  if(req.method!=="POST") return new Response(JSON.stringify({error:"Method not allowed"}),{status:405,headers:{...corsHeaders,"Content-Type":"application/json"}});
@@ -29,7 +29,7 @@ Deno.serve(async (req: Request) => {
   const admin=createClient(url,serviceKey,{auth:{persistSession:false}});
   const {data,error}=await admin.auth.admin.createUser({email,password,email_confirm:true,user_metadata:{full_name:fullName}});
   if(error) return new Response(JSON.stringify({error:error.message}),{status:400,headers:{...corsHeaders,"Content-Type":"application/json"}});
-  const {error:assignError}=await admin.from("user_roles").upsert({user_id:data.user.id,role,permissions,commission_rate,whatsapp_number:wa||null});
+  const {error:assignError}=await admin.from("user_roles").upsert({user_id:data.user.id,role,permissions,commission_rate,whatsapp_number:wa||""});
   if(assignError){await admin.auth.admin.deleteUser(data.user.id);return new Response(JSON.stringify({error:"Invitation cancelled because permission assignment failed: "+assignError.message}),{status:500,headers:{...corsHeaders,"Content-Type":"application/json"}});}
   return new Response(JSON.stringify({success:true,email,role,permissions,message:"User account created successfully."}),{status:200,headers:{...corsHeaders,"Content-Type":"application/json"}});
  } catch(e){return new Response(JSON.stringify({error:e instanceof Error?e.message:"Unexpected server error"}),{status:500,headers:{...corsHeaders,"Content-Type":"application/json"}});}
