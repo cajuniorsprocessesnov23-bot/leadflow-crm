@@ -6,7 +6,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const GRAPH = "https://graph.facebook.com/v24.0";
-const PHONE_NUMBER_ID = "1055145887685477";
+const PHONE_NUMBER_ID = Deno.env.get("WHATSAPP_PHONE_NUMBER_ID") || "1055145887685477";
 const json = (b: unknown, status = 200) => new Response(JSON.stringify(b), { status, headers: { "Content-Type": "application/json" } });
 
 // ---- Replies sent back to the client (inside the 24-hour window, so free text is allowed) ----

@@ -6,8 +6,10 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const GRAPH = "https://graph.facebook.com/v24.0";
 // legal wegal, +91 93700 77727 (found with the discover action on 2026-11-13). Not secret.
-const WABA_ID = "927100876842881";
-const PHONE_NUMBER_ID = "1055145887685477";
+// Override with Supabase secrets WHATSAPP_WABA_ID / WHATSAPP_PHONE_NUMBER_ID to switch numbers.
+const WABA_ID = Deno.env.get("WHATSAPP_WABA_ID") || "927100876842881";
+const PHONE_NUMBER_ID = Deno.env.get("WHATSAPP_PHONE_NUMBER_ID") || "1055145887685477";
+const HI_TECH_BUSINESS_ID = "1256389646022701";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -60,6 +62,14 @@ Deno.serve(async (req: Request) => {
       const phone = await graph(`${PHONE_NUMBER_ID}?fields=id,display_phone_number,status,name_status,account_mode,quality_rating,messaging_limit_tier,platform_type,code_verification_status,health_status`, token);
       const apps = await graph(`${WABA_ID}/subscribed_apps`, token);
       return json({ ok: true, waba: waba.ok ? waba.body : { error: waba.body?.error?.message }, phone: phone.ok ? phone.body : { error: phone.body?.error?.message }, subscribed_apps: apps.ok ? (apps.body?.data || []).map((a: { whatsapp_business_api_data?: { name?: string; id?: string } }) => a.whatsapp_business_api_data?.name || a.whatsapp_business_api_data?.id) : { error: apps.body?.error?.message } });
+    }
+
+    // All WhatsApp accounts and numbers this token can see in the Hi Tech portfolio (read-only).
+    if (action === "list_numbers") {
+      const f = "id,name,phone_numbers{id,display_phone_number,verified_name,status,platform_type,code_verification_status}";
+      const own = await graph(`${HI_TECH_BUSINESS_ID}/owned_whatsapp_business_accounts?fields=${f}`, token);
+      const cli = await graph(`${HI_TECH_BUSINESS_ID}/client_whatsapp_business_accounts?fields=${f}`, token);
+      return json({ ok: true, in_use: { waba: WABA_ID, phone: PHONE_NUMBER_ID }, owned: own.ok ? own.body?.data : { error: own.body?.error?.message }, client: cli.ok ? cli.body?.data : { error: cli.body?.error?.message } });
     }
 
     // Subscribe this token's Meta app to the legal wegal WhatsApp account, so Meta sends
