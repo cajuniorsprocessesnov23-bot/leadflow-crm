@@ -72,6 +72,20 @@ Deno.serve(async (req: Request) => {
       return json({ ok: true, result: body, subscribed_apps: (apps.body?.data || []).map((a: { whatsapp_business_api_data?: { name?: string; id?: string } }) => a.whatsapp_business_api_data || a) });
     }
 
+    // Ask Meta to (re-)register +91 93700 77727 for Cloud API sending. Needs the number's
+    // 6-digit two-step PIN (if none is set, this PIN becomes it). Returns Meta's answer as-is.
+    if (action === "register") {
+      const pin = String(input?.pin || "");
+      if (!/^\d{6}$/.test(pin)) return json({ error: "Give a 6-digit PIN." }, 400);
+      const r = await fetch(`${GRAPH}/${PHONE_NUMBER_ID}/register`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ messaging_product: "whatsapp", pin }),
+      });
+      const body = await r.json().catch(() => ({}));
+      return json({ ok: r.ok, status: r.status, result: r.ok ? body : null, error: body?.error?.message ?? null, code: body?.error?.code ?? null, subcode: body?.error?.error_subcode ?? null, details: body?.error?.error_data?.details ?? null }, r.ok ? 200 : 502);
+    }
+
     // One test message from +91 93700 77727 to a number the Super Admin types in.
     // template: an APPROVED template name (business-initiated); text: free-form, only
     // delivered if that person messaged the business in the last 24 hours.
