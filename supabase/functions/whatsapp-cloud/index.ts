@@ -72,6 +72,28 @@ Deno.serve(async (req: Request) => {
       return json({ ok: true, in_use: { waba: WABA_ID, phone: PHONE_NUMBER_ID }, owned: own.ok ? own.body?.data : { error: own.body?.error?.message }, client: cli.ok ? cli.body?.data : { error: cli.body?.error?.message } });
     }
 
+    // Submit a message template for Meta approval. body may use {{1}}, {{2}}…; give one
+    // example value per variable in examples. buttons: up to 3 quick-reply texts.
+    if (action === "create_template") {
+      const name = String(input?.name || "");
+      if (!/^[a-z0-9_]{1,512}$/.test(name)) return json({ error: "Template name: lowercase letters, numbers and _ only." }, 400);
+      const category = ["UTILITY", "MARKETING", "AUTHENTICATION"].includes(input?.category) ? input.category : "UTILITY";
+      const text = String(input?.body || "").trim();
+      if (!text) return json({ error: "Give the body text." }, 400);
+      const examples: string[] = Array.isArray(input?.examples) ? input.examples.map(String) : [];
+      const components: Record<string, unknown>[] = [{ type: "BODY", text, ...(examples.length ? { example: { body_text: [examples] } } : {}) }];
+      if (typeof input?.footer === "string" && input.footer.trim()) components.push({ type: "FOOTER", text: input.footer.trim().slice(0, 60) });
+      const btns: string[] = Array.isArray(input?.buttons) ? input.buttons.map(String).slice(0, 3) : [];
+      if (btns.length) components.push({ type: "BUTTONS", buttons: btns.map((t) => ({ type: "QUICK_REPLY", text: t.slice(0, 25) })) });
+      const r = await fetch(`${GRAPH}/${WABA_ID}/message_templates`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ name, category, language: typeof input?.language === "string" ? input.language : "en", components }),
+      });
+      const body = await r.json().catch(() => ({}));
+      return json({ ok: r.ok, result: r.ok ? body : null, error: body?.error?.error_user_msg || body?.error?.message || null }, r.ok ? 200 : 400);
+    }
+
     // Subscribe this token's Meta app to the legal wegal WhatsApp account, so Meta sends
     // its message/status webhooks to the app's callback URL (our whatsapp-webhook function).
     if (action === "subscribe_app") {
