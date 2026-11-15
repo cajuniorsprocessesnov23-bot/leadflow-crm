@@ -126,7 +126,9 @@ Deno.serve(async (req: Request) => {
       if (!/^[1-9]\d{9,14}$/.test(to)) return json({ error: "Give the number with country code, e.g. 919876543210." }, 400);
       let message: Record<string, unknown>;
       if (typeof input?.template === "string" && /^[a-z0-9_]{1,512}$/.test(input.template)) {
-        message = { type: "template", template: { name: input.template, language: { code: typeof input?.language === "string" ? input.language : "en_US" } } };
+        const params: string[] = Array.isArray(input?.params) ? input.params.map((p: unknown) => String(p ?? "-").slice(0, 900) || "-") : [];
+        message = { type: "template", template: { name: input.template, language: { code: typeof input?.language === "string" ? input.language : "en_US" },
+          ...(params.length ? { components: [{ type: "body", parameters: params.map((text) => ({ type: "text", text })) }] } : {}) } };
       } else if (typeof input?.text === "string" && input.text.trim()) {
         message = { type: "text", text: { body: input.text.trim().slice(0, 1000) } };
       } else return json({ error: "Give either template or text." }, 400);
