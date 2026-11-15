@@ -11,3 +11,17 @@ select cron.schedule('whatsapp-dispatch-every-5-min', '*/5 * * * *', $job$
       'x-dispatch-secret', (select decrypted_secret from vault.decrypted_secrets where name = 'wa_dispatch_secret')),
     body := '{}'::jsonb, timeout_milliseconds := 30000)
 $job$);
+
+-- Delay summaries (whatsapp-delays): 11:00 IST = 05:30 UTC and 16:00 IST = 10:30 UTC, Monday–Saturday.
+select cron.schedule('whatsapp-delays-11am', '30 5 * * 1-6', $job$
+  select net.http_post(url := 'https://smedmzwiddhmxaznqoen.supabase.co/functions/v1/whatsapp-delays',
+    headers := jsonb_build_object('Content-Type', 'application/json',
+      'x-dispatch-secret', (select decrypted_secret from vault.decrypted_secrets where name = 'wa_dispatch_secret')),
+    body := '{"slot":"11am"}'::jsonb, timeout_milliseconds := 60000)
+$job$);
+select cron.schedule('whatsapp-delays-4pm', '30 10 * * 1-6', $job$
+  select net.http_post(url := 'https://smedmzwiddhmxaznqoen.supabase.co/functions/v1/whatsapp-delays',
+    headers := jsonb_build_object('Content-Type', 'application/json',
+      'x-dispatch-secret', (select decrypted_secret from vault.decrypted_secrets where name = 'wa_dispatch_secret')),
+    body := '{"slot":"4pm"}'::jsonb, timeout_milliseconds := 60000)
+$job$);
