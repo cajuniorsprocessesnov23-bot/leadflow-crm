@@ -1,5 +1,6 @@
 // Sends queued WhatsApp messages (public.whatsapp_messages, status 'queued').
-// Called every few minutes by a schedule (service role key), or by the Super Admin.
+// Called every 5 minutes by pg_cron (x-dispatch-secret header), or by the Super Admin.
+// Deploy with "Enforce JWT verification" OFF; access is checked in the code below.
 // Rules: quiet hours 9 AM–8 PM IST; client consent and stage re-checked at send time;
 // at most 2 client messages per number per day; a template must be APPROVED by Meta
 // (otherwise the message stays queued and is retried later).
@@ -9,7 +10,7 @@ const GRAPH = "https://graph.facebook.com/v24.0";
 const WABA_ID = Deno.env.get("WHATSAPP_WABA_ID") || "927100876842881";
 const PHONE_NUMBER_ID = Deno.env.get("WHATSAPP_PHONE_NUMBER_ID") || "1055145887685477";
 const BATCH = 40;
-const json = (b: unknown, status = 200) => new Response(JSON.stringify(b), { status, headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type" } });
+const json = (b: unknown, status = 200) => new Response(JSON.stringify(b), { status, headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-dispatch-secret" } });
 
 function istNow() {
   const d = new Date(Date.now() + 5.5 * 3600e3);
@@ -26,7 +27,9 @@ Deno.serve(async (req: Request) => {
   const url = Deno.env.get("SUPABASE_URL")!, service = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, anon = Deno.env.get("SUPABASE_ANON_KEY")!;
   const jwt = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
   const db = createClient(url, service, { auth: { persistSession: false } });
-  let allowed = jwt === service;
+  // The schedule (pg_cron) sends x-dispatch-secret; the Super Admin can also run it by hand.
+  const dispatchSecret = Deno.env.get("WHATSAPP_DISPATCH_SECRET") || "";
+  let allowed = jwt === service || (dispatchSecret.length >= 24 && req.headers.get("x-dispatch-secret") === dispatchSecret);
   if (!allowed && jwt) {
     const u = await createClient(url, anon, { global: { headers: { Authorization: `Bearer ${jwt}` } }, auth: { persistSession: false } }).auth.getUser(jwt);
     if (u.data?.user) {
