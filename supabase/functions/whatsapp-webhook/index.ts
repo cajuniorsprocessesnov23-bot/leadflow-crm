@@ -116,7 +116,7 @@ Deno.serve(async (req: Request) => {
   };
 
   // Loaded once per webhook call, only if a message needs them.
-  let ctxCache: { types: string[]; staffPhones: Set<string>; staff: { id: string; name: string }[] } | null = null;
+  let ctxCache: { types: string[]; staffPhones: Set<string>; staff: { id: string; name: string }[]; everyone: { id: string; name: string }[] } | null = null;
   const loadCtx = async () => {
     if (ctxCache) return ctxCache;
     const [{ data: lt }, { data: roles }, { data: users }] = await Promise.all([
@@ -129,6 +129,7 @@ Deno.serve(async (req: Request) => {
       types: (lt ?? []).filter((t: any) => t.active).map((t: any) => t.name),
       staffPhones: new Set([...(roles ?? []).map((r: any) => last10(r.whatsapp_number || "")).filter((x: string) => x.length === 10), last10(Deno.env.get("SUPER_ADMIN_WHATSAPP") || "918208221425")]),
       staff: (roles ?? []).filter((r: any) => r.role === "staff").map((r: any) => ({ id: r.user_id, name: nameOf(r.user_id) })),
+      everyone: (roles ?? []).map((r: any) => ({ id: r.user_id, name: nameOf(r.user_id) })),
     };
     return ctxCache;
   };
@@ -183,15 +184,19 @@ Deno.serve(async (req: Request) => {
         }).select("id").single();
         if (!inb) continue; // already received (Meta retries the same message) or could not be stored
 
-        // New number writing in (not staff): create an Unverified lead, RM = staff member with the fewest WhatsApp leads.
+        // New number writing in (not staff): create an Unverified lead owned by the person the Super Admin chose.
         if (!leadId && (msg.type === "text" || msg.type === "image" || msg.type === "document" || msg.type === "audio")) {
           const c = await loadCtx();
           const ten = last10(from);
-          if (!c.staffPhones.has(ten) && c.staff.length) {
+          if (!c.staffPhones.has(ten) && c.everyone.length) {
             const { data: wl } = await db.from("leads").select("owner_user_id").eq("source", "WhatsApp");
             const load = new Map(c.staff.map((x) => [x.id, 0]));
             for (const r of wl ?? []) if (load.has(r.owner_user_id)) load.set(r.owner_user_id, (load.get(r.owner_user_id) || 0) + 1);
-            const rm = [...c.staff].sort((a, b) => (load.get(a.id)! - load.get(b.id)!) || a.name.localeCompare(b.name))[0];
+            // Owner chosen by the Super Admin (Manage Users -> WhatsApp leads go to); fallback: fewest WhatsApp leads.
+            const { data: chosen } = await db.rpc("get_whatsapp_lead_owner");
+            const rm = c.everyone.find((x) => x.id === chosen)
+              ?? [...c.staff].sort((a, b) => (load.get(a.id)! - load.get(b.id)!) || a.name.localeCompare(b.name))[0]
+              ?? c.everyone[0];
             const profile = (v.contacts ?? []).find((x: any) => x.wa_id === from)?.profile?.name;
             const { data: code } = await db.rpc("next_lead_code");
             const newId = crypto.randomUUID();
