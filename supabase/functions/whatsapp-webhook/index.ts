@@ -53,6 +53,8 @@ const SERVICE_WORDS: Record<string, RegExp> = {
   "GST": /\bgst(in|r\d*)?\b|goods and services tax/i,
   "Trademark": /trade ?mark|\btm\b|brand (name )?regist|logo regist/i,
   "FSSAI": /fssai|food (licen[cs]e|regist)/i,
+  "IEC": /\biec\b|import ?export|import-export code/i,
+  "HUID / Hallmarking": /huid|hallmark|\bbis\b.*(gold|jewel)|jewel(le)?ry regist/i,
   "Company Registration": /company (regist|incorporat|formation)|pvt\.? ?ltd|private limited|\bopc\b|one person company|incorporat/i,
   "LLP Registration": /\bllp\b|limited liability partnership/i,
   "MSME / Udyam": /msme|udyam|udyog/i,
