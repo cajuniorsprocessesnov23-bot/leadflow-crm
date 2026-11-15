@@ -16,6 +16,7 @@ const TXT = {
   slotIntro: "Sure! When should our team call you?",
   slotDone: (when: string) => `Thank you! Our team will call you ${when}.`,
   callNow: "Thank you! Our team will call you shortly.",
+  offline: (day: string) => `Thank you! Our team is offline right now (working hours 9 AM to 8 PM). We will call you in the next working hours, from 9 AM ${day}.`,
   notInterested: "Thank you for letting us know. We won't message you about this again. If you need help in future, just message us here.",
   details: "Thank you! Our team will share the details with you here shortly.",
   paidAlready: "Thank you! Our team will check and confirm your payment shortly.",
@@ -35,6 +36,17 @@ function ist(days: number, hour: number): Date {
   const nowIst = new Date(Date.now() + 5.5 * 3600e3);
   const d = Date.UTC(nowIst.getUTCFullYear(), nowIst.getUTCMonth(), nowIst.getUTCDate() + days, hour, 0) - 5.5 * 3600e3;
   return new Date(Math.max(d, Date.now() + 15 * 60e3));
+}
+// Working hours for call-backs: 9 AM to 8 PM IST.
+function offHours(d: Date): boolean {
+  const h = new Date(d.getTime() + 5.5 * 3600e3).getUTCHours();
+  return h < 9 || h >= 20;
+}
+function nextOpen(from = new Date()): { at: Date; day: string } {
+  const ist0 = new Date(from.getTime() + 5.5 * 3600e3);
+  const before9 = ist0.getUTCHours() < 9;
+  const at = new Date(Date.UTC(ist0.getUTCFullYear(), ist0.getUTCMonth(), ist0.getUTCDate() + (before9 ? 0 : 1), 9, 0) - 5.5 * 3600e3);
+  return { at, day: before9 ? "today" : "tomorrow" };
 }
 const last10 = (p: string) => String(p || "").replace(/\D/g, "").slice(-10);
 
@@ -143,7 +155,13 @@ Deno.serve(async (req: Request) => {
         let action = "recorded";
         const lead = leadId ? (await db.from("leads").select("id,stage,notes").eq("id", leadId).maybeSingle()).data : null;
         const setLead = async (patch: Record<string, unknown>) => { if (lead) await db.from("leads").update({ ...patch, updated_at: nowIso }).eq("id", lead.id); };
-        const callback = async (at: Date, note: string) => setLead({ callback_due_at: at.toISOString(), callback_note: note });
+        // Returns the offline reply text when the call has to wait for working hours, else null.
+        const callback = async (at: Date, note: string): Promise<string | null> => {
+          let when = at, off: string | null = null;
+          if (offHours(at)) { const n = nextOpen(at < new Date() ? new Date() : at); when = n.at; off = TXT.offline(n.day); }
+          await setLead({ callback_due_at: when.toISOString(), callback_note: note + (off ? " (asked outside working hours)" : "") });
+          return off;
+        };
 
         if (["stop", "unsubscribe", "stop all"].includes(word)) {
           await setLead({ whatsapp_opt_in: false, whatsapp_opted_out_at: nowIso, whatsapp_optout_reason: "Client replied STOP" });
@@ -153,30 +171,30 @@ Deno.serve(async (req: Request) => {
           await send(from, { type: "text", text: { body: TXT.start } }, "ack_start", leadId); action = "opted_in";
         } else if (payloadId && SLOTS.some((s) => s.id === payloadId)) {
           const s = SLOTS.find((x) => x.id === payloadId)!;
-          await callback(s.at(), `Client chose on WhatsApp: ${s.title}`);
-          await send(from, { type: "text", text: { body: TXT.slotDone(s.when) } }, "ack_slot", leadId); action = "callback_" + s.id;
+          const off = await callback(s.at(), `Client chose on WhatsApp: ${s.title}`);
+          await send(from, { type: "text", text: { body: off ?? TXT.slotDone(s.when) } }, "ack_slot", leadId); action = "callback_" + s.id;
         } else if (word === "call later") {
           await send(from, { type: "interactive", interactive: { type: "list", body: { text: TXT.slotIntro }, action: { button: "Choose a time", sections: [{ title: "Call me", rows: SLOTS.map((s) => ({ id: s.id, title: s.title })) }] } } }, "slot_list", leadId);
           action = "slot_list_sent";
         } else if (word === "call me in 1 hour") {
-          await callback(SLOTS[0].at(), "Client asked on WhatsApp: call in 1 hour");
-          await send(from, { type: "text", text: { body: TXT.slotDone(SLOTS[0].when) } }, "ack_slot", leadId); action = "callback_1h";
+          const off = await callback(SLOTS[0].at(), "Client asked on WhatsApp: call in 1 hour");
+          await send(from, { type: "text", text: { body: off ?? TXT.slotDone(SLOTS[0].when) } }, "ack_slot", leadId); action = "callback_1h";
         } else if (word === "tomorrow") {
           await callback(ist(1, 11), "Client asked on WhatsApp: call tomorrow");
           await send(from, { type: "text", text: { body: TXT.slotDone("tomorrow") } }, "ack_slot", leadId); action = "callback_tomorrow";
         } else if (["call me now", "call me back", "call me", "need help", "restart work"].includes(word)) {
-          await callback(new Date(), `Client tapped "${buttonText ?? text}" on WhatsApp`);
-          await send(from, { type: "text", text: { body: TXT.callNow } }, "ack_call", leadId); action = "callback_now";
+          const off = await callback(new Date(), `Client tapped "${buttonText ?? text}" on WhatsApp`);
+          await send(from, { type: "text", text: { body: off ?? TXT.callNow } }, "ack_call", leadId); action = off ? "callback_next_working_hours" : "callback_now";
         } else if (word === "not interested") {
           if (lead && EARLY_STAGES(String(lead.stage || ""))) await setLead({ stage: "Clear no lead", stage_date: nowIso.slice(0, 10), whatsapp_opt_in: false, whatsapp_opted_out_at: nowIso, whatsapp_optout_reason: "Not interested (WhatsApp button)" });
           else await setLead({ whatsapp_opt_in: false, whatsapp_opted_out_at: nowIso, whatsapp_optout_reason: "Not interested (WhatsApp button)" });
           await send(from, { type: "text", text: { body: TXT.notInterested } }, "ack_not_interested", leadId); action = "not_interested";
         } else if (word === "send details on whatsapp") {
-          await callback(new Date(), "Client asked for service details on WhatsApp");
-          await send(from, { type: "text", text: { body: TXT.details } }, "ack_details", leadId); action = "details_requested";
+          const off = await callback(new Date(), "Client asked for service details on WhatsApp");
+          await send(from, { type: "text", text: { body: off ?? TXT.details } }, "ack_details", leadId); action = "details_requested";
         } else if (word === "paid already") {
-          await callback(new Date(), "Client says payment is already made - please verify");
-          await send(from, { type: "text", text: { body: TXT.paidAlready } }, "ack_paid", leadId); action = "paid_claim";
+          const off = await callback(new Date(), "Client says payment is already made - please verify");
+          await send(from, { type: "text", text: { body: off ?? TXT.paidAlready } }, "ack_paid", leadId); action = "paid_claim";
         } else if (word === "pay later" || word === "not now") {
           action = word === "pay later" ? "pay_later" : "not_now";
         } else if (word === "happy") {
