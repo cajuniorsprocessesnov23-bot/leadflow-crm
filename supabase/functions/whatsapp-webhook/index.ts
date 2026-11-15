@@ -48,6 +48,21 @@ function nextOpen(from = new Date()): { at: Date; day: string } {
   const at = new Date(Date.UTC(ist0.getUTCFullYear(), ist0.getUTCMonth(), ist0.getUTCDate() + (before9 ? 0 : 1), 9, 0) - 5.5 * 3600e3);
   return { at, day: before9 ? "today" : "tomorrow" };
 }
+// Services a client asks about, found in their message text. Keys must match lead type names in the CRM.
+const SERVICE_WORDS: Record<string, RegExp> = {
+  "GST": /\bgst(in|r\d*)?\b|goods and services tax/i,
+  "Trademark": /trade ?mark|\btm\b|brand (name )?regist|logo regist/i,
+  "FSSAI": /fssai|food (licen[cs]e|regist)/i,
+  "Company Registration": /company (regist|incorporat|formation)|pvt\.? ?ltd|private limited|\bopc\b|one person company|incorporat/i,
+  "LLP Registration": /\bllp\b|limited liability partnership/i,
+  "MSME / Udyam": /msme|udyam|udyog/i,
+  "Income Tax": /income ?tax|\bitr\b|tax return|\btds\b/i,
+  "Accounting": /accounting|book ?keeping|\baccounts\b|\btally\b/i,
+};
+function detectServices(text: string, active: string[]): string[] {
+  const found = Object.entries(SERVICE_WORDS).filter(([, re]) => re.test(text)).map(([name]) => name);
+  return found.filter((n) => active.includes(n));
+}
 const last10 = (p: string) => String(p || "").replace(/\D/g, "").slice(-10);
 
 async function validSignature(raw: string, header: string | null, secret: string): Promise<boolean> {
@@ -100,6 +115,24 @@ Deno.serve(async (req: Request) => {
     } catch (e) { console.error("reply failed", e); }
   };
 
+  // Loaded once per webhook call, only if a message needs them.
+  let ctxCache: { types: string[]; staffPhones: Set<string>; staff: { id: string; name: string }[] } | null = null;
+  const loadCtx = async () => {
+    if (ctxCache) return ctxCache;
+    const [{ data: lt }, { data: roles }, { data: users }] = await Promise.all([
+      db.from("lead_type_options").select("name,active"),
+      db.from("user_roles").select("user_id,role,whatsapp_number"),
+      db.auth.admin.listUsers({ page: 1, perPage: 1000 }),
+    ]);
+    const nameOf = (id: string) => { const u = users?.users?.find((x: any) => x.id === id); return u?.user_metadata?.full_name || (u?.email || "Team").split("@")[0]; };
+    ctxCache = {
+      types: (lt ?? []).filter((t: any) => t.active).map((t: any) => t.name),
+      staffPhones: new Set([...(roles ?? []).map((r: any) => last10(r.whatsapp_number || "")).filter((x: string) => x.length === 10), last10(Deno.env.get("SUPER_ADMIN_WHATSAPP") || "918208221425")]),
+      staff: (roles ?? []).filter((r: any) => r.role === "staff").map((r: any) => ({ id: r.user_id, name: nameOf(r.user_id) })),
+    };
+    return ctxCache;
+  };
+
   for (const entry of body?.entry ?? []) {
     for (const change of entry?.changes ?? []) {
       if (change?.field !== "messages") continue;
@@ -149,6 +182,38 @@ Deno.serve(async (req: Request) => {
           button_payload: String(payloadId ?? ""), context_wamid: String(ctx ?? ""), raw: msg,
         }).select("id").single();
         if (!inb) continue; // already received (Meta retries the same message) or could not be stored
+
+        // New number writing in (not staff): create an Unverified lead, RM = staff member with the fewest WhatsApp leads.
+        if (!leadId && (msg.type === "text" || msg.type === "image" || msg.type === "document" || msg.type === "audio")) {
+          const c = await loadCtx();
+          const ten = last10(from);
+          if (!c.staffPhones.has(ten) && c.staff.length) {
+            const { data: wl } = await db.from("leads").select("owner_user_id").eq("source", "WhatsApp");
+            const load = new Map(c.staff.map((x) => [x.id, 0]));
+            for (const r of wl ?? []) if (load.has(r.owner_user_id)) load.set(r.owner_user_id, (load.get(r.owner_user_id) || 0) + 1);
+            const rm = [...c.staff].sort((a, b) => (load.get(a.id)! - load.get(b.id)!) || a.name.localeCompare(b.name))[0];
+            const profile = (v.contacts ?? []).find((x: any) => x.wa_id === from)?.profile?.name;
+            const { data: code } = await db.rpc("next_lead_code");
+            const newId = crypto.randomUUID();
+            const firstText = String(text ?? msg.image?.caption ?? msg.document?.caption ?? "").slice(0, 500);
+            const { error: le } = await db.from("leads").insert({
+              id: newId, created_by: rm.id, created_by_name: rm.name, owner_user_id: rm.id,
+              name: String(profile || "WhatsApp enquiry").slice(0, 120), phone: ten.length === 10 && from.startsWith("91") ? ten : from,
+              stage: "Unverified", arrival: new Date(Date.now() + 5.5 * 3600e3).toISOString().slice(0, 10), source: "WhatsApp",
+              lead_code: code ?? null, lead_types: detectServices(firstText, c.types), whatsapp_opt_in: true,
+              notes: firstText ? `WhatsApp enquiry: ${firstText}` : "Messaged on WhatsApp",
+            });
+            if (!le) { leadId = newId; await db.from("whatsapp_inbound").update({ lead_id: newId }).eq("id", inb.id); }
+            else console.error("auto-lead failed", le.message);
+          }
+        } else if (leadId && text) {
+          // Known lead with no service recorded yet: fill it from what they wrote.
+          const { data: cur } = await db.from("leads").select("lead_types").eq("id", leadId).maybeSingle();
+          if (cur && !(cur.lead_types ?? []).length) {
+            const found = detectServices(text, (await loadCtx()).types);
+            if (found.length) await db.from("leads").update({ lead_types: found, updated_at: new Date().toISOString() }).eq("id", leadId);
+          }
+        }
 
         const word = String(buttonText ?? text ?? "").trim().toLowerCase();
         const nowIso = new Date().toISOString();
