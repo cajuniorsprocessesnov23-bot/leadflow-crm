@@ -49,7 +49,7 @@ Deno.serve(async (req: Request) => {
   const secret = Deno.env.get("WHATSAPP_DISPATCH_SECRET") || "";
   if (!(secret.length >= 24 && req.headers.get("x-dispatch-secret") === secret)) return json({ error: "Not allowed" }, 403);
   const body = await req.json().catch(() => ({}));
-  const slot = body?.slot === "4pm" ? "4pm" : "11am";
+  const slot = body?.slot === "4pm" ? "4pm" : body?.slot === "summary" ? "summary" : "11am";
   const db = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, { auth: { persistSession: false } });
 
   const today = istDay(), yesterday = addDays(today, -1);
@@ -89,6 +89,28 @@ Deno.serve(async (req: Request) => {
   const superAdmin = Deno.env.get("SUPER_ADMIN_WHATSAPP") || "918208221425";
 
   const rows: Record<string, unknown>[] = [];
+  // Evening summary for the Super Admin (slot "summary", ~7:50 PM IST, before the 8 PM send cut-off).
+  if (slot === "summary") {
+    const start = new Date(today + "T00:00:00+05:30").toISOString();
+    const [nl, ca, ev, pc] = await Promise.all([
+      db.from("leads").select("id", { count: "exact", head: true }).gte("created_at", start),
+      db.from("call_activity").select("id", { count: "exact", head: true }).eq("call_date", today),
+      db.from("lead_events").select("new_value").eq("field", "Stage").in("new_value", ["Verified", "Work done"]).gte("changed_at", start),
+      db.from("payment_collections").select("amount").eq("collected_on", today),
+    ]);
+    const verified = (ev.data ?? []).filter((e: any) => e.new_value === "Verified").length;
+    const done = (ev.data ?? []).filter((e: any) => e.new_value === "Work done").length;
+    const collected = (pc.data ?? []).reduce((a: number, r: any) => a + Number(r.amount || 0), 0);
+    const overdue = [...per.values()].reduce((a, p) => a + p.calls + p.work, 0);
+    const day = new Date(today + "T00:00:00Z").toLocaleDateString("en-IN", { day: "numeric", month: "short", timeZone: "UTC" });
+    const sa = superAdmin.replace(/\D/g, "");
+    const { error: e3 } = await db.from("whatsapp_messages").upsert([{
+      recipient_phone: sa.length === 10 ? "91" + sa : sa, recipient_kind: "super_admin", message_key: "T-summary", template_name: "lw_t_daily_summary",
+      params: [day, String(nl.count ?? 0), String(ca.count ?? 0), String(verified), String(done), collected.toLocaleString("en-IN", { maximumFractionDigits: 0 }), String(overdue)],
+      dedupe_key: `TSUM:${today}`, scheduled_for: nowIso }], { onConflict: "dedupe_key", ignoreDuplicates: true });
+    if (e3) return json({ error: e3.message }, 500);
+    return json({ ok: true, slot, new_leads: nl.count, calls: ca.count, verified, done, collected, overdue });
+  }
   const label = slot === "4pm" ? "4 PM" : "11 AM";
   const when = `${label}, ${new Date(today + "T00:00:00Z").toLocaleDateString("en-IN", { day: "numeric", month: "short", timeZone: "UTC" })}`;
   for (const [uid, p] of per) {
