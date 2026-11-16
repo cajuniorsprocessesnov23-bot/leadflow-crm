@@ -50,7 +50,7 @@ Deno.serve(async (req: Request) => {
 
     // Approved message templates on the legal wegal WhatsApp account (read-only).
     if (action === "templates") {
-      const t = await graph(`${WABA_ID}/message_templates?fields=name,status,category,language&limit=100`, token);
+      const t = await graph(`${WABA_ID}/message_templates?fields=name,status,category,language,components&limit=100`, token);
       if (!t.ok) return json({ ok: false, error: t.body?.error?.message || "Could not list templates." }, 502);
       return json({ ok: true, templates: t.body?.data ?? [] });
     }
