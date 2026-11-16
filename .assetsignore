@@ -4,3 +4,4 @@ wrangler.toml
 .assetsignore
 supabase
 n8n
+marketing
