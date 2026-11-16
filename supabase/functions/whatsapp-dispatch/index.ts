@@ -55,7 +55,9 @@ Deno.serve(async (req: Request) => {
   const summary = { sent: 0, failed: 0, skipped: 0, waiting_template: 0, deferred: 0, stopped: "" };
 
   for (const m of due ?? []) {
-    if (!approved.has(m.template_name)) { summary.waiting_template++; continue; }
+    // A utility re-submission named <template>_u is used once Meta approves it (16 Nov 2026).
+    const tpl = approved.has(m.template_name + "_u") ? m.template_name + "_u" : m.template_name;
+    if (!approved.has(tpl)) { summary.waiting_template++; continue; }
 
     // Claim the row so two runs never send it twice.
     const { data: claimed } = await db.from("whatsapp_messages").update({ status: "sending", attempts: (m.attempts ?? 0) + 1 }).eq("id", m.id).eq("status", "queued").select("id");
@@ -81,7 +83,7 @@ Deno.serve(async (req: Request) => {
     const params: string[] = Array.isArray(m.params) ? m.params.map((p: unknown) => String(p ?? "-").slice(0, 900) || "-") : [];
     const payload = {
       messaging_product: "whatsapp", recipient_type: "individual", to: m.recipient_phone, type: "template",
-      template: { name: m.template_name, language: { code: approved.get(m.template_name) || "en" },
+      template: { name: tpl, language: { code: approved.get(tpl) || "en" },
         components: params.length ? [{ type: "body", parameters: params.map((text) => ({ type: "text", text })) }] : [] },
     };
     const r = await fetch(`${GRAPH}/${PHONE_NUMBER_ID}/messages`, { method: "POST", headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" }, body: JSON.stringify(payload) });
