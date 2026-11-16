@@ -64,7 +64,8 @@ Deno.serve(async (req: Request) => {
     if (m.recipient_kind === "client") {
       // A client message whose lead was deleted (lead_id now null) is never sent.
       const { data: lead } = m.lead_id ? await db.from("leads").select("whatsapp_opt_in,stage").eq("id", m.lead_id).maybeSingle() : { data: null };
-      if (!lead || !lead.whatsapp_opt_in || ["False lead", "Clear no lead"].includes(lead.stage)) {
+      const goodbye = m.message_key === "C-nolead" && lead?.stage === "Clear no lead";
+      if (!lead || !lead.whatsapp_opt_in || (!goodbye && ["False lead", "Clear no lead"].includes(lead.stage))) {
         await db.from("whatsapp_messages").update({ status: "skipped", error_detail: "No consent or not a lead at send time" }).eq("id", m.id);
         summary.skipped++; continue;
       }
