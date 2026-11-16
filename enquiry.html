@@ -65,6 +65,11 @@
     .mbar a.w{background:#effaf3;color:#0b7a3e;border-color:#bfe8cf}.mbar a.c{background:var(--brand);color:#fff;border-color:var(--brand)}
     footer{padding-bottom:84px}
   }
+
+  .vh{position:absolute!important;width:1px;height:1px;opacity:0;pointer-events:none}
+  .phone input{font-size:1.15rem;padding:13px 12px}.phone span{display:flex;align-items:center}
+  .svc{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}.svc button{width:auto;margin:0;padding:8px 13px;border-radius:999px;background:var(--soft);color:var(--ink);border:1px solid var(--line);font-weight:600;font-size:.9rem}.svc button.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .wa-alt{display:block;text-align:center;margin-top:12px;font-weight:700;color:#0b7a3e;text-decoration:none;background:#effaf3;border:1px solid #bfe8cf;border-radius:10px;padding:11px}
 </style>
 </head>
 <body>
@@ -84,14 +89,12 @@
     </div>
     <div class="card">
       <form id="f" novalidate>
-        <h2>Get a call back</h2>
-        <p class="sub">Takes 20 seconds · We call 9 AM to 8 PM · No spam</p>
-        <label for="name">Your name</label>
-        <input id="name" name="name" autocomplete="name" maxlength="120" required>
-        <label for="phone">Mobile number</label>
-        <div class="phone"><span>+91</span><input id="phone" name="phone" inputmode="numeric" autocomplete="tel-national" maxlength="14" placeholder="10-digit mobile" required></div>
-        <label for="service">What do you need?</label>
-        <select id="service" name="service">
+        <h2>Get a free call back</h2>
+        <p class="sub">2 fields · We call 9 AM to 8 PM · No spam</p>
+        <div class="phone"><span>+91</span><input id="phone" name="phone" type="tel" inputmode="numeric" autocomplete="tel-national" maxlength="14" placeholder="Mobile number" aria-label="Mobile number" required></div>
+        <input id="name" name="name" autocomplete="name" maxlength="120" placeholder="Your name" aria-label="Your name" required style="margin-top:10px">
+        <div class="svc" id="svcChips" role="group" aria-label="What do you need?"><button type="button" data-s="gst">GST</button><button type="button" data-s="trademark">Trademark</button><button type="button" data-s="iec">IEC</button><button type="button" data-s="fssai">FSSAI</button><button type="button" data-s="huid">HUID</button><button type="button" data-s="">Other</button></div>
+        <select id="service" name="service" class="vh" tabindex="-1" aria-hidden="true">
           <option value="gst">GST registration / returns</option>
           <option value="trademark">Trademark registration</option>
           <option value="iec">IEC (Import Export Code)</option>
@@ -106,7 +109,8 @@
         <textarea id="message" name="message" maxlength="500" placeholder="e.g. New food business in Pune, need FSSAI basic licence"></textarea>
         </details>
         <div class="hp" aria-hidden="true"><label for="website">Website</label><input id="website" name="website" tabindex="-1" autocomplete="off"></div>
-        <button id="go" type="submit">Request a call back</button>
+        <button id="go" type="submit">Call me back</button>
+        <a class="wa-alt" id="waAlt" href="https://wa.me/919370077727">Prefer WhatsApp? Chat with us now →</a>
         <p class="err" id="err"></p>
         <p class="fine">By submitting, you agree that Legal Wegal may call you and send updates on WhatsApp. Reply STOP anytime. <a href="privacy.html">Privacy policy</a>.</p>
       </form>
@@ -156,13 +160,23 @@
     var ul=document.getElementById('points');ul.innerHTML='';c.p.forEach(function(x){var li=document.createElement('li');li.textContent=x;ul.appendChild(li)});
     document.getElementById('service').value=s;
     document.title='Legal Wegal | '+c.eye.split(' · ')[0];
-    var wa='https://wa.me/919370077727?text='+encodeURIComponent('Hi, I need help with '+c.eye.split(' · ')[0]);['waLink','mbarWa','doneWa'].forEach(function(id){var e=document.getElementById(id);if(e)e.href=wa});
+    var wa='https://wa.me/919370077727?text='+encodeURIComponent('Hi, I need help with '+c.eye.split(' · ')[0]);['waLink','mbarWa','doneWa','waAlt'].forEach(function(id){var e=document.getElementById(id);if(e)e.href=wa});
     var on=document.querySelector('.grid a[data-s="'+s+'"]');if(on)on.classList.add('on');
   }
   // keep ad tracking params when switching service
   document.querySelectorAll('.grid a').forEach(function(a){var u=new URLSearchParams(location.search);u.set('s',a.getAttribute('data-s'));a.href='?'+u.toString()});
 
   document.getElementById('mbarGo').addEventListener('click',function(e){e.preventDefault();document.getElementById('f').scrollIntoView({behavior:'smooth',block:'center'});setTimeout(function(){document.getElementById('name').focus()},400)});
+  // service chips <-> hidden select
+  var selEl=document.getElementById('service');if(!COPY[s])selEl.value='';function syncChips(){document.querySelectorAll('#svcChips button').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-s')===selEl.value)})}
+  document.querySelectorAll('#svcChips button').forEach(function(b){b.addEventListener('click',function(){selEl.value=b.getAttribute('data-s');syncChips()})});syncChips();
+  // tracking (no personal data): visit, form_start, form_submit, call_tap, wa_tap
+  var SID;try{SID=sessionStorage.getItem('lw_sid')||Math.random().toString(36).slice(2);sessionStorage.setItem('lw_sid',SID)}catch(e){SID=Math.random().toString(36).slice(2)}
+  function track(ev){try{var b=JSON.stringify({track:ev,sid:SID,service:selEl.value||s||'',utm_source:q.get('utm_source')||'',utm_campaign:q.get('utm_campaign')||'',gclid:q.get('gclid')||q.get('gbraid')||q.get('wbraid')||''});if(navigator.sendBeacon&&ev!=='visit'){navigator.sendBeacon(ENDPOINT,new Blob([b],{type:'text/plain'}))}else{fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:b,keepalive:true}).catch(function(){})}}catch(e){}
+    var C=window.LW_CONV||{};if(window.gtag&&C[ev])gtag('event','conversion',{send_to:C[ev]})}
+  try{if(!sessionStorage.getItem('lw_v_'+location.search)){sessionStorage.setItem('lw_v_'+location.search,'1');track('visit')}}catch(e){track('visit')}
+  document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a');if(!a)return;var h=a.getAttribute('href')||'';if(h.indexOf('tel:')===0)track('call_tap');if(h.indexOf('wa.me')>-1)track('wa_tap')});
+  var started=false;document.getElementById('f').addEventListener('focusin',function(){if(!started){started=true;track('form_start')}});
   var f=document.getElementById('f'),err=document.getElementById('err'),go=document.getElementById('go');
   f.addEventListener('submit',function(e){
     e.preventDefault();err.style.display='none';
@@ -176,7 +190,7 @@
     })}).then(function(r){return r.json().then(function(j){return{ok:r.ok,j:j}})}).then(function(x){
       if(!x.ok||x.j.error)throw new Error(x.j.error||'Could not send');
       f.style.display='none';document.getElementById('done').style.display='block';
-      if(window.gtag&&window.LW_CONVERSION)gtag('event','conversion',{send_to:window.LW_CONVERSION});
+      track('form_submit');
     }).catch(function(e2){show(e2.message||'Could not send. Please call or WhatsApp us.');go.disabled=false;go.textContent='Request a call back'});
   });
   function show(m){err.textContent=m;err.style.display='block'}

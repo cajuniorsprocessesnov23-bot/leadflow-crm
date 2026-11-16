@@ -1,6 +1,7 @@
 // Web / ad enquiries -> LeadFlow CRM (Unverified lead).
 // Three senders:
 //   1. Our enquiry page (enquiry.html): JSON { name, phone, service, city, message, utm_source, utm_campaign, gclid, hp }
+//      plus tracking pings { track: visit|form_start|form_submit|call_tap|wa_tap, utm_*, service, sid } → web_events
 //   2. Google Ads lead form webhook: { google_key, user_column_data: [...], campaign_id, gcl_id, lead_id, is_test }
 //      google_key must equal the GOOGLE_LEAD_KEY secret (set in Supabase -> Edge Functions -> Secrets).
 //   3. Meta (Facebook / Instagram) lead ads webhook: object "page", field "leadgen". Signed with the
@@ -169,6 +170,17 @@ Deno.serve(async (req: Request) => {
       source: "Google Ads", campaign: clean(body.campaign_id, 40), click: clean(body.gcl_id, 200), service: "", test: !!body.is_test,
     });
     return out(r.body, r.status);
+  }
+
+  // ---- Enquiry page tracking (no personal data) ----
+  if (body && typeof body.track === "string") {
+    const ev = clean(body.track, 20);
+    if (!["visit", "form_start", "form_submit", "call_tap", "wa_tap"].includes(ev)) return out({ error: "Unknown event" }, 400);
+    const src = clean(body.utm_source, 40), click = !!clean(body.gclid, 10);
+    const source = /google|gads|adwords/i.test(src) || click ? "Google Ads" : /facebook|meta|instagram|fb|ig/i.test(src) ? "Meta Ads" : src ? clean(src, 40) : "Direct / other";
+    await db.from("web_events").insert({ event: ev, source, campaign: clean(body.utm_campaign, 80), service: clean(body.service, 30),
+      session_id: clean(body.sid, 40), has_click_id: click, device: /Mobi|Android|iPhone/i.test(req.headers.get("user-agent") || "") ? "mobile" : "desktop" });
+    return out({ ok: true });
   }
 
   // ---- Our enquiry page ----
