@@ -195,7 +195,9 @@ Deno.serve(async (req: Request) => {
             const load = new Map(c.staff.map((x) => [x.id, 0]));
             for (const r of wl ?? []) if (load.has(r.owner_user_id)) load.set(r.owner_user_id, (load.get(r.owner_user_id) || 0) + 1);
             // Owner chosen by the Super Admin (Manage Users -> WhatsApp leads go to); fallback: fewest WhatsApp leads.
-            const { data: chosen } = await db.rpc("get_whatsapp_lead_owner");
+            const firstTextForOwner = String(text ?? msg.image?.caption ?? msg.document?.caption ?? "").slice(0, 500);
+            // Owner: Settings → service map first, then "WhatsApp leads go to", then fewest WhatsApp leads.
+            const { data: chosen } = await db.rpc("lead_owner_for_services", { p_services: detectServices(firstTextForOwner, c.types) });
             const rm = c.everyone.find((x) => x.id === chosen)
               ?? [...c.staff].sort((a, b) => (load.get(a.id)! - load.get(b.id)!) || a.name.localeCompare(b.name))[0]
               ?? c.everyone[0];
