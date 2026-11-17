@@ -1,0 +1,416 @@
+{
+ "company-registration": {
+  "fee": 7000,
+  "govt": "DSC, name reservation (RUN/SPICe+), MCA filing fees and state stamp duty at actuals"
+ },
+ "private-company-registration": {
+  "fee": 7000,
+  "govt": "DSC, name reservation (RUN/SPICe+), MCA filing fees and state stamp duty at actuals"
+ },
+ "company-registration-in-bangalore": {
+  "fee": 7000,
+  "govt": "DSC, name reservation, MCA filing fees and Karnataka stamp duty at actuals"
+ },
+ "company-registration-in-chennai": {
+  "fee": 7000,
+  "govt": "DSC, name reservation, MCA filing fees and Tamil Nadu stamp duty at actuals"
+ },
+ "one-person-company-registration": {
+  "fee": 5000,
+  "govt": "DSC, name reservation, MCA filing fees and state stamp duty at actuals"
+ },
+ "llp-partnership": {
+  "fee": 5000,
+  "govt": "DSC, LLP name reservation, MCA filing fees and stamp duty on the LLP agreement at actuals"
+ },
+ "public-limited-company": {
+  "fee": 16899,
+  "govt": "DSC for 3 directors, name reservation, MCA filing fees and state stamp duty at actuals"
+ },
+ "gst-registration": {
+  "fee": 1499,
+  "govt": "No government fee"
+ },
+ "gst-return-filing": {
+  "fee": 999,
+  "unit": "/month",
+  "note": "Basic ₹999/month · Advanced ₹1,499/month",
+  "govt": "No government fee (late fee/interest only if filed late)"
+ },
+ "online-gst-nil-return-filing": {
+  "fee": 500,
+  "unit": "/month",
+  "govt": "No government fee"
+ },
+ "trademark-registration": {
+  "fee": 1999,
+  "unit": " per class",
+  "govt": "₹4,500 per class (individual, startup, MSME) or ₹9,000 per class (others), online filing"
+ },
+ "trademark-objection-reply": {
+  "fee": 4599,
+  "note": "Standard ₹4,599 · Premium ₹10,999",
+  "govt": "No government fee",
+  "src": "onlinelegalindia"
+ },
+ "trademark-opposition-india": {
+  "fee": 2499,
+  "note": "Notice or reply ₹2,499 · Notice + reply ₹4,499",
+  "govt": "₹2,700 per opposition / counter-statement (online)",
+  "src": "onlinelegalindia"
+ },
+ "trademark-assignment": {
+  "fee": 8999,
+  "note": "",
+  "govt": "Government fee for recording assignment (TM-P) at actuals",
+  "src": "onlinelegalindia"
+ },
+ "series-trademark": {
+  "fee": 3999,
+  "note": "Starting from",
+  "govt": "₹4,500 / ₹9,000 per mark as applicable",
+  "src": "onlinelegalindia"
+ },
+ "logo-design": {
+  "fee": 2999,
+  "note": "Standard ₹2,999 · Premium ₹4,999",
+  "govt": "No government fee",
+  "src": "onlinelegalindia"
+ },
+ "appointment-of-director": {
+  "fee": 2999,
+  "note": "1 director",
+  "govt": "MCA filing fee and DSC at actuals",
+  "src": "onlinelegalindia"
+ },
+ "share-transfer": {
+  "fee": 4999,
+  "note": "Person to person ₹4,999 · Corporate entity ₹6,999",
+  "govt": "Stamp duty on the transfer deed at actuals",
+  "src": "onlinelegalindia"
+ },
+ "iso-certification": {
+  "fee": 5999,
+  "note": "Starting from",
+  "govt": "Certification body audit fee included in quote",
+  "src": "onlinelegalindia"
+ },
+ "iso-registration": {
+  "fee": 5999,
+  "note": "Starting from",
+  "govt": "Certification body audit fee included in quote",
+  "src": "onlinelegalindia"
+ },
+ "fssai-registration": {
+  "fee": 1999,
+  "note": "Starting from",
+  "govt": "FSSAI fee: ₹100/year (Basic), ₹2,000–5,000/year (State), ₹7,500/year (Central)",
+  "src": "onlinelegalindia"
+ },
+ "online-iec-code-import-export-license": {
+  "fee": 1999,
+  "note": "",
+  "govt": "DGFT fee ₹500",
+  "src": "onlinelegalindia"
+ },
+ "bis-certificate": {
+  "fee": 1999,
+  "note": "",
+  "govt": "BIS registration fee at actuals",
+  "src": "onlinelegalindia"
+ },
+ "gst-cancellation": {
+  "fee": 1499,
+  "note": "",
+  "govt": "No government fee",
+  "src": "onlinelegalindia"
+ },
+ "online-annual-compliance-filing": {
+  "fee": 11999,
+  "note": "Starting from",
+  "govt": "ROC filing fees at actuals",
+  "src": "onlinelegalindia"
+ },
+ "online-tax-planning-consultancy": {
+  "fee": 999,
+  "note": "Salaried from ₹999 · Other income from ₹1,499",
+  "govt": "No government fee",
+  "src": "onlinelegalindia"
+ },
+ "online-esic-registration": {
+  "fee": 4999,
+  "note": "",
+  "govt": "No government fee",
+  "src": "onlinelegalindia"
+ },
+ "business-compliance": {
+  "fee": 2999,
+  "note": "Growth ₹2,999 · Scale ₹5,999",
+  "govt": "Government fees at actuals",
+  "src": "onlinelegalindia"
+ },
+ "business-registration-license": {
+  "fee": 2999,
+  "note": "",
+  "govt": "Government/municipal fees at actuals",
+  "src": "onlinelegalindia"
+ },
+ "itr": {
+  "fee": 1770,
+  "note": "Starting from (freelancers / self-employed)",
+  "govt": "No government fee",
+  "src": "onlinelegalindia"
+ },
+ "itr-efiling": {
+  "fee": 1770,
+  "note": "Starting from (freelancers / self-employed)",
+  "govt": "No government fee",
+  "src": "onlinelegalindia"
+ },
+ "online-apeda-registration": {
+  "fee": 1999,
+  "note": "",
+  "govt": "APEDA registration fee ₹5,000 + GST",
+  "src": "onlinelegalindia"
+ },
+ "company-name-change": {
+  "fee": 8999,
+  "note": "",
+  "govt": "Name reservation and MCA filing fees at actuals",
+  "src": "onlinelegalindia"
+ },
+ "increasing-authorized-capital": {
+  "fee": 5999,
+  "note": "Starting from",
+  "govt": "MCA fee and stamp duty on increased capital at actuals",
+  "src": "onlinelegalindia"
+ },
+ "annual-compliance-bookkeeping": {
+  "fee": 22999,
+  "note": "Starting from",
+  "govt": "ROC filing fees at actuals",
+  "src": "onlinelegalindia"
+ },
+ "consumer-complaint-odr": {
+  "fee": 1999,
+  "note": "Starting from",
+  "govt": "Consumer Commission fee, if filed, at actuals",
+  "src": "onlinelegalindia"
+ },
+ "consumer-dispute-odr": {
+  "fee": 1999,
+  "note": "Starting from",
+  "govt": "Consumer Commission fee, if filed, at actuals",
+  "src": "onlinelegalindia"
+ },
+ "gstr-9-annual-filing": {
+  "fee": 2999,
+  "unit": "",
+  "note": "",
+  "govt": "No government fee (late fee only if filed late)"
+ },
+ "gst-lut-filing": {
+  "fee": 1499,
+  "unit": "",
+  "note": "",
+  "govt": "No government fee"
+ },
+ "gst-eway-bill-generation": {
+  "fee": 99,
+  "unit": " per bill",
+  "note": "",
+  "govt": "No government fee"
+ },
+ "gst-modification": {
+  "fee": 999,
+  "unit": "",
+  "note": "",
+  "govt": "No government fee"
+ },
+ "gst-online": {
+  "fee": 1499,
+  "unit": "/month",
+  "note": "All GST work in one monthly plan",
+  "govt": "No government fee"
+ },
+ "trademark-hearing-india": {
+  "fee": 7999,
+  "unit": "",
+  "note": "",
+  "govt": "No government fee"
+ },
+ "trademark-renewal": {
+  "fee": 2999,
+  "unit": " per class",
+  "note": "",
+  "govt": "₹9,000 per class (online); surcharge if renewed late"
+ },
+ "online-copyright-registration": {
+  "fee": 2999,
+  "unit": "",
+  "note": "",
+  "govt": "Copyright Office fee per work (e.g. ₹500 for a literary or artistic work)"
+ },
+ "sole-proprietorship-registration": {
+  "fee": 1499,
+  "unit": "",
+  "note": "",
+  "govt": "Shop licence / municipal fees, if any, at actuals"
+ },
+ "partnership-deed": {
+  "fee": 4999,
+  "unit": "",
+  "note": "",
+  "govt": "Stamp duty on the deed and Registrar of Firms fee at actuals"
+ },
+ "company-compl-llptopvt": {
+  "fee": 7999,
+  "unit": "",
+  "note": "",
+  "govt": "MCA filing fees and stamp duty at actuals"
+ },
+ "company-compl-opctopvt": {
+  "fee": 7999,
+  "unit": "",
+  "note": "",
+  "govt": "MCA filing fees and stamp duty at actuals"
+ },
+ "company-compl-pvttopubc": {
+  "fee": 19999,
+  "unit": "",
+  "note": "",
+  "govt": "MCA filing fees at actuals"
+ },
+ "fssai-renewal": {
+  "fee": 599,
+  "unit": "",
+  "note": "",
+  "govt": "FSSAI licence fee per year as applicable"
+ },
+ "fssai-modification": {
+  "fee": 599,
+  "unit": "",
+  "note": "",
+  "govt": "FSSAI modification fee as applicable"
+ },
+ "fssai-annual-return-filing": {
+  "fee": 599,
+  "unit": "",
+  "note": "",
+  "govt": "No fee if filed on time; late fee per day after the due date"
+ },
+ "iec-certificate-modification": {
+  "fee": 999,
+  "unit": "",
+  "note": "",
+  "govt": "DGFT modification fee at actuals"
+ },
+ "trade-license": {
+  "fee": 499,
+  "unit": "",
+  "note": "",
+  "govt": "Municipal trade licence fee (varies by city)"
+ },
+ "corporate-compliance-governance": {
+  "fee": 20000,
+  "unit": "/month",
+  "note": "Legal Buddy: ₹20,000/month or ₹1,00,000/year",
+  "govt": "ROC fees, if any, at actuals"
+ },
+ "online-bookkeeping-service": {
+  "fee": 1999,
+  "unit": "/month",
+  "note": "Starting from",
+  "govt": ""
+ },
+ "virtual-cfo-services": {
+  "fee": 24999,
+  "unit": "/month",
+  "note": "Starting from",
+  "govt": ""
+ },
+ "hr-compliance": {
+  "fee": 2999,
+  "unit": "/month",
+  "note": "Starting from",
+  "govt": ""
+ },
+ "online-pf-registration": {
+  "fee": 2999,
+  "unit": "",
+  "note": "",
+  "govt": "No government fee"
+ },
+ "online-ptax-registration": {
+  "fee": 1999,
+  "unit": "",
+  "note": "",
+  "govt": "State professional tax enrolment fee, if any, at actuals"
+ },
+ "online-tax-audit": {
+  "fee": 14999,
+  "unit": "",
+  "note": "Starting from",
+  "govt": ""
+ },
+ "online-dispute-resolution": {
+  "fee": 4999,
+  "unit": "",
+  "note": "Starting from",
+  "govt": ""
+ },
+ "all-online-dispute-resolution": {
+  "fee": 4999,
+  "unit": "",
+  "note": "Starting from",
+  "govt": ""
+ },
+ "legal-dispute-odr": {
+  "fee": 4999,
+  "unit": "",
+  "note": "Starting from",
+  "govt": ""
+ },
+ "consumer-complaint": {
+  "fee": 2999,
+  "unit": "",
+  "note": "",
+  "govt": "Consumer Commission fee, if filed, at actuals"
+ },
+ "insurance-claim-dispute-odr": {
+  "fee": 4999,
+  "unit": "",
+  "note": "Starting from",
+  "govt": "Insurance Ombudsman: no fee"
+ },
+ "labour-dispute-odr": {
+  "fee": 4999,
+  "unit": "",
+  "note": "Starting from",
+  "govt": ""
+ },
+ "legal-advice": {
+  "fee": 0,
+  "unit": "",
+  "note": "First call free",
+  "govt": ""
+ },
+ "legal-notice": {
+  "fee": 1999,
+  "unit": "",
+  "note": "",
+  "govt": "Courier / postage at actuals"
+ },
+ "rent-agreement": {
+  "fee": 2500,
+  "unit": "",
+  "note": "",
+  "govt": "E-stamp duty and registration fee at actuals (state-wise)"
+ },
+ "founders-discussion-table": {
+  "fee": 0,
+  "unit": "",
+  "note": "Free session",
+  "govt": ""
+ }
+}
