@@ -5,3 +5,5 @@ wrangler.toml
 supabase
 n8n
 marketing
+CNAME
+.nojekyll
