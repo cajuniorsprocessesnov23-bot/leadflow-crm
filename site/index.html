@@ -283,7 +283,7 @@ async function sendLead(e){
   if(!/^[6-9]\d{9}$/.test(ph)){msg.style.color='#c0392b';msg.textContent='Please enter a valid 10-digit mobile number.';return false}
   const b=e.submitter||document.querySelector('#lead button[type=submit]');b.disabled=true;msg.textContent='Sending…';
   try{
-    const r=await fetch(SB+'/functions/v1/web-lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:$('lname').value.trim(),phone:ph,service:[...picked][0]||'',message:(picked.size>1?'Services: '+[...picked].join(', ')+'. ':'')+(qPicked.size?'Estimate: '+[...qPicked].join(', ')+'. ':'')+(g('ref')?'Referral: '+g('ref')+'. ':'')+'Page: new site home',utm_source:g('utm_source'),utm_campaign:g('utm_campaign'),gclid:g('gclid'),hp:$('hp').value})});
+    const r=await fetch(SB+'/functions/v1/web-lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:$('lname').value.trim(),phone:ph,service:[...picked][0]||'',message:(picked.size>1?'Services: '+[...picked].join(', ')+'. ':'')+(qPicked.size?'Estimate: '+[...qPicked].join(', ')+'. ':'')+'Page: new site home',ref:g('ref'),utm_source:g('utm_source'),utm_campaign:g('utm_campaign'),gclid:g('gclid'),hp:$('hp').value})});
     const j=await r.json();
     if(j.ok){$('lead').innerHTML='<div style="text-align:center;padding:24px 0"><div style="font-size:40px">✓</div><h3>Thank you!</h3><p class="small">Our expert will call you shortly from +91 93700 77727. You will also get a WhatsApp message.</p></div>';try{window.gtag&&gtag('event','generate_lead')}catch(x){}}
     else{msg.style.color='#c0392b';msg.textContent=j.error||'Could not send. Please WhatsApp us.';b.disabled=false}

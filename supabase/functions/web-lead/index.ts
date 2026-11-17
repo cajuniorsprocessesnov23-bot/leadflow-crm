@@ -39,7 +39,7 @@ const SLUGS: Record<string, string> = { gst: "GST", trademark: "Trademark", fssa
 const clean = (v: unknown, n = 200) => String(v ?? "").replace(/[\u0000-\u001f]/g, " ").trim().slice(0, n);
 const last10 = (p: string) => String(p || "").replace(/\D/g, "").slice(-10);
 
-type Form = { name: string; phone: string; city: string; email: string; text: string; source: string; campaign: string; click: string; service: string; test: boolean };
+type Form = { name: string; phone: string; city: string; email: string; text: string; source: string; campaign: string; click: string; service: string; test: boolean; ref?: string };
 type Out = { status: number; body: Record<string, unknown> };
 const db = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, { auth: { persistSession: false } });
 
@@ -84,13 +84,16 @@ async function processLead(f: Form): Promise<Out> {
   const ownerName = u?.user?.user_metadata?.full_name || (u?.user?.email || "Team").split("@")[0];
 
   const { data: code } = await db.rpc("next_lead_code");
+  const newId = crypto.randomUUID();
   const { error } = await db.from("leads").insert({
-    id: crypto.randomUUID(), created_by: ownerId, created_by_name: ownerName, owner_user_id: ownerId,
+    id: newId, created_by: ownerId, created_by_name: ownerName, owner_user_id: ownerId,
     name: f.name, phone: ten, stage: "Unverified", arrival: nowIst.toISOString().slice(0, 10), source: f.source,
     lead_code: code ?? null, lead_types: types, whatsapp_opt_in: true,
     notes: `${f.source} enquiry (${stamp}). ${detail}`.slice(0, 5000),
   });
   if (error) { console.error("web-lead insert failed", error.message); return { status: 500, body: { error: "Could not save. Please call or WhatsApp us." } }; }
+  // Partner code (LWP-xxxx) or client referral code (LWR-xxxxxx) from ?ref= on the website
+  if (f.ref) { const { error: te } = await db.rpc("tag_lead_with_code", { p_lead_id: newId, p_code: f.ref }); if (te) console.error("tag_lead_with_code", te.message); }
   return { status: 200, body: { ok: true } };
 }
 
@@ -190,6 +193,7 @@ Deno.serve(async (req: Request) => {
     source: /google|gads|adwords/i.test(clean(body?.utm_source)) || clean(body?.gclid) ? "Google Ads"
       : /facebook|meta|instagram|fb|ig/i.test(clean(body?.utm_source)) ? "Meta Ads" : "Website",
     campaign: clean(body?.utm_campaign, 80), click: clean(body?.gclid, 200), service: clean(body?.service, 60), test: false,
+    ref: clean(body?.ref, 20),
   });
   return out(r.body, r.status);
 });
