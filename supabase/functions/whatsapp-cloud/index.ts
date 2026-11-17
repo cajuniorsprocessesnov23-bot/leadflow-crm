@@ -79,12 +79,22 @@ Deno.serve(async (req: Request) => {
       if (!/^[a-z0-9_]{1,512}$/.test(name)) return json({ error: "Template name: lowercase letters, numbers and _ only." }, 400);
       const category = ["UTILITY", "MARKETING", "AUTHENTICATION"].includes(input?.category) ? input.category : "UTILITY";
       const text = String(input?.body || "").trim();
-      if (!text) return json({ error: "Give the body text." }, 400);
-      const examples: string[] = Array.isArray(input?.examples) ? input.examples.map(String) : [];
-      const components: Record<string, unknown>[] = [{ type: "BODY", text, ...(examples.length ? { example: { body_text: [examples] } } : {}) }];
-      if (typeof input?.footer === "string" && input.footer.trim()) components.push({ type: "FOOTER", text: input.footer.trim().slice(0, 60) });
-      const btns: string[] = Array.isArray(input?.buttons) ? input.buttons.map(String).slice(0, 3) : [];
-      if (btns.length) components.push({ type: "BUTTONS", buttons: btns.map((t) => ({ type: "QUICK_REPLY", text: t.slice(0, 25) })) });
+      let components: Record<string, unknown>[];
+      if (category === "AUTHENTICATION") {
+        // Meta fixes the wording of login-code templates: "<code> is your verification code."
+        components = [
+          { type: "BODY", add_security_recommendation: true },
+          { type: "FOOTER", code_expiration_minutes: Math.min(Math.max(Number(input?.expiry_minutes) || 10, 1), 90) },
+          { type: "BUTTONS", buttons: [{ type: "OTP", otp_type: "COPY_CODE", text: "Copy code" }] },
+        ];
+      } else {
+        if (!text) return json({ error: "Give the body text." }, 400);
+        const examples: string[] = Array.isArray(input?.examples) ? input.examples.map(String) : [];
+        components = [{ type: "BODY", text, ...(examples.length ? { example: { body_text: [examples] } } : {}) }];
+        if (typeof input?.footer === "string" && input.footer.trim()) components.push({ type: "FOOTER", text: input.footer.trim().slice(0, 60) });
+        const btns: string[] = Array.isArray(input?.buttons) ? input.buttons.map(String).slice(0, 3) : [];
+        if (btns.length) components.push({ type: "BUTTONS", buttons: btns.map((t) => ({ type: "QUICK_REPLY", text: t.slice(0, 25) })) });
+      }
       const r = await fetch(`${GRAPH}/${WABA_ID}/message_templates`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
