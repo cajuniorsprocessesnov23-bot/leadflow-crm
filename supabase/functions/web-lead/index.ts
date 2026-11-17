@@ -13,7 +13,7 @@
 // Deploy with "Enforce JWT verification" OFF (the public page and Google cannot send a Supabase JWT).
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const ORIGINS = ["https://leadflow-crm.cajuniorsprocessesnov23.workers.dev", "https://legalwegal.com", "https://www.legalwegal.com"];
+const ORIGINS = ["https://leadflow-crm.cajuniorsprocessesnov23.workers.dev", "https://legalwegal.com", "https://www.legalwegal.com", "https://erp.legalwegal.com"];
 const cors = (origin: string | null) => ({
   "Access-Control-Allow-Origin": origin && ORIGINS.includes(origin) ? origin : ORIGINS[0],
   "Access-Control-Allow-Headers": "content-type",
