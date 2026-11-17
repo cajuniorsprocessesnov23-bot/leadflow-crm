@@ -100,7 +100,8 @@ input:focus,textarea:focus{outline:2px solid var(--purple);border-color:transpar
 <input type="file" id="filePick" class="hide" accept="application/pdf,image/*">
 
 <script>
-const sb = supabase.createClient('https://smedmzwiddhmxaznqoen.supabase.co','sb_publishable_Y14BKYhQ7k7xSL8jhX6vFg_scknKxpe');
+// Own storage key: never touches a CRM staff session on the same domain.
+const sb = supabase.createClient('https://smedmzwiddhmxaznqoen.supabase.co','sb_publishable_Y14BKYhQ7k7xSL8jhX6vFg_scknKxpe', { auth: { storageKey: 'lw-client-portal', persistSession: true } });
 let data = null, phone10 = '', pickTarget = null;
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -140,14 +141,14 @@ function friendly(m){
   if(/rate|seconds/i.test(m)) return 'Please wait a minute before asking for another code.';
   return m || 'Something went wrong. Please try again.';
 }
-async function logout(){ await sb.auth.signOut(); data=null; resetLogin(); show('login'); }
+async function logout(){ await sb.auth.signOut({ scope: 'local' }); data=null; resetLogin(); show('login'); }
 
 // ---------- Data ----------
 async function load(){
   const { data: sess } = await sb.auth.getSession();
-  if(!sess.session){ show('login'); return; }
+  if(!sess.session || !sess.session.user.phone){ show('login'); return; }
   const { data: d, error } = await sb.rpc('client_dashboard');
-  if(error){ show('login'); $('phoneErr').textContent = 'Could not load your account. Please log in again.'; await sb.auth.signOut(); return; }
+  if(error){ await sb.auth.signOut({ scope: 'local' }); show('login'); $('phoneErr').textContent = 'Could not load your account. Please log in again.'; return; }
   data = d; phone10 = d.phone; render(); show('app');
 }
 function render(){
