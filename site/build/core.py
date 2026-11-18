@@ -94,6 +94,7 @@ def core_pages(preview):
     # old URL had a space: keep it working and point search engines to /our-team/
     write("our team/index.html", '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Our team – Legal Wegal</title><link rel="canonical" href="'+SITE+'/our-team/"><meta http-equiv="refresh" content="0; url=/our-team/"><meta name="robots" content="noindex"></head><body><a href="/our-team/">Our team</a></body></html>', preview)
     partners(preview)
+    quote_page(preview)
 
 PARTNER_APP = r"""<div id="pp" class="card" style="max-width:760px;margin:0 auto">
 <div id="pLogin"><h3 style="margin:0 0 4px;color:var(--brand)">Partner login / sign up</h3><p class="small">We send a 6-digit code to your WhatsApp.</p>
@@ -150,3 +151,37 @@ def partners(preview):
 <details><summary>Conduct</summary><p>Do not promise government outcomes or timelines, and do not use Legal Wegal's name in paid ads without written approval. Accounts can be suspended for misuse.</p></details></div></section></main>"""
     write("partners/index.html", page("/partners/", "Partner Program for CAs & Consultants – Earn Commission | Legal Wegal",
           "Join the Legal Wegal partner program. Refer or resell company, GST, trademark and licence services and earn commission paid monthly.", body, None, preview), preview)
+
+def quote_page(preview):
+    import os
+    render = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "assets", "quote-render.js"), encoding="utf-8").read()
+    html = """<!DOCTYPE html><html lang="en-IN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Your quotation – Legal Wegal</title><meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#1d1250">
+<style>body{margin:0;background:#f4f2fb;font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#1c1830}
+.wrapq{max-width:840px;margin:18px auto;background:#fff;border-radius:14px;box-shadow:0 4px 24px #1d125014;overflow:hidden}
+.bar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;padding:16px;border-top:1px solid #e6e3f2;background:#faf9ff}
+.b{display:inline-block;border:0;cursor:pointer;text-decoration:none;font:inherit;font-weight:700;padding:11px 16px;border-radius:10px;background:#3a1fa8;color:#fff}
+.b.g{background:#fff;color:#1d1250;border:1.5px solid #cfc5ff}.b.wa{background:#25d366}.msg{text-align:center;padding:40px 20px}
+@media print{body{background:#fff}.wrapq{box-shadow:none;margin:0}.bar,.noprint{display:none}}</style></head><body>
+<div class="wrapq"><div id="qBody" class="msg">Loading your quotation…</div><div class="bar" id="qBar" style="display:none"></div></div>
+<script>__RENDER__</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(async function(){var t=new URLSearchParams(location.search).get('t')||'',B=document.getElementById('qBody'),bar=document.getElementById('qBar');
+if(!/^[0-9a-f-]{36}$/i.test(t)){B.innerHTML='This quotation link is not valid. Please WhatsApp us on +91 93700 77727.';return}
+var sb=supabase.createClient('__SB__','__KEY__',{auth:{persistSession:false}});
+var r=await sb.rpc('quote_public',{p_token:t});if(r.error||!r.data){B.innerHTML='We could not find this quotation. Please WhatsApp us on +91 93700 77727.';return}
+var q=r.data;B.className='';B.innerHTML=lwQuoteHtml(q);document.title='Quotation '+q.quote_no+' – Legal Wegal';
+var wa='https://wa.me/919370077727?text='+encodeURIComponent('Hi Legal Wegal, about quotation '+q.quote_no+': ');
+var adv=Math.round(Number(q.total)*Number(q.advance_pct)/100);
+var upi='upi://pay?pa='+encodeURIComponent(lwQuoteUpi)+'&pn=Legal%20Wegal&am='+adv+'&cu=INR&tn='+encodeURIComponent(q.quote_no+' advance');
+var h='';if(q.expired)h+='<div style="width:100%;text-align:center;color:#c0392b"><b>This quotation has expired.</b> Ask us for an updated one.</div>';
+else if(q.status==='accepted')h+='<div style="width:100%;text-align:center;color:#0f8a6b"><b>✓ You accepted this quotation.</b> Pay the advance to start.</div>';
+else h+='<button class="b" id="acc">Accept quotation</button>';
+h+='<a class="b" href="'+upi+'">Pay ₹'+adv.toLocaleString('en-IN')+' by UPI</a>';
+h+=q.pdf_url?'<a class="b g" href="'+q.pdf_url+'" target="_blank" rel="noopener">Download PDF</a>':'<button class="b g" onclick="print()">Download PDF</button>';
+h+='<a class="b wa" href="'+wa+'">Ask a question</a>';bar.innerHTML=h;bar.style.display='';
+var a=document.getElementById('acc');if(a)a.onclick=async function(){a.disabled=true;a.textContent='Saving…';var x=await sb.rpc('accept_quote',{p_token:t});
+a.outerHTML=(x.data?'<div style="width:100%;text-align:center;color:#0f8a6b"><b>✓ Thank you! Quotation accepted.</b> Pay the advance by UPI and send the screenshot on WhatsApp.</div>':'<div style="width:100%;text-align:center">Could not save. Please WhatsApp us.</div>')}})();
+</script></body></html>""".replace("__RENDER__", render).replace("__SB__", SB_URL).replace("__KEY__", SB_KEY)
+    write("quote/index.html", html, preview)
