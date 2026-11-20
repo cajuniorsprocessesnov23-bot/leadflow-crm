@@ -22,7 +22,7 @@
     var n = 0, row = function (i) { n++; return '<tr><td>' + n + '</td><td>' + esc(i.desc) + '</td><td class="r">' + rs(i.amount) + '</td></tr>'; };
     var adv = Math.round(Number(q.total || 0) * Number(q.advance_pct == null ? 50 : q.advance_pct) / 100), bal = Number(q.total || 0) - adv;
     var h = '<style>' + CSS + '</style><div class="lwq">';
-    h += '<div class="top"><div><div class="logo"><b>LW</b>Legal Wegal</div><div class="sm">' + PHONE + ' · info@legalwegal.com · www.legalwegal.com</div></div>' +
+    h += '<div class="top"><div><div class="logo"><b>LW</b>Legal Wegal</div><div class="sm">' + PHONE + ' · legalwegal.com@gmail.com · www.legalwegal.com</div></div>' +
       '<div class="meta"><h1>QUOTATION</h1><div class="sm">No. <b>' + esc(q.quote_no || 'Draft') + '</b><br>Date: ' + dt(q.date || new Date()) + '<br>Valid till: <b>' + dt(q.valid_till) + '</b></div></div></div>';
     h += '<div class="two"><div class="box"><h4>Prepared for</h4><b>' + esc(q.client_name) + '</b><br>' + esc(q.client_phone_masked || '') +
       (q.lead_code || q.client_place ? '<br>' + esc([q.lead_code ? 'Lead ' + q.lead_code : '', q.client_place].filter(Boolean).join(' · ')) : '') + '</div>' +

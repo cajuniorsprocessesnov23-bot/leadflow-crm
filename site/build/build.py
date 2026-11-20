@@ -109,7 +109,7 @@ def footer_html():
         items = [(s, d) for s, d in SVC.items() if d["c"] == c and not d.get("hub") and not d.get("special")][:8]
         cols.append(f'<div><h4>{e(label)}</h4>' + "".join(f'<a href="/services/{s}/">{e(d["n"])}</a>' for s, d in items) + '</div>')
     return f"""<footer><div class="wrap"><div class="fgrid">{''.join(cols)}</div>
-<div class="fgrid" style="margin-top:20px"><div><h4>Legal Wegal</h4><a href="tel:{PHONE}">{PHONE_TXT}</a><a href="mailto:info@legalwegal.com">info@legalwegal.com</a></div>
+<div class="fgrid" style="margin-top:20px"><div><h4>Legal Wegal</h4><a href="tel:{PHONE}">{PHONE_TXT}</a><a href="mailto:legalwegal.com@gmail.com">legalwegal.com@gmail.com</a></div>
 <div><h4>Company</h4><a href="/about/">About us</a><a href="/contact/">Contact</a><a href="/our-team/">Our team</a><a href="/services/feedback/">Client feedback</a></div>
 <div><h4>For you</h4><a href="/Login/">Client login</a><a href="/partners/">Partner program</a><a href="/services/tc/">Why Legal Wegal</a></div>
 <div><h4>Legal</h4><a href="/policy/privacy-policy/">Privacy policy</a><a href="/policy/terms-and-conditions/">Terms & conditions</a></div></div>

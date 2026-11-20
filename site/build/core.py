@@ -49,7 +49,7 @@ def home(preview):
 function lwRows(){{var t=0,r=[];document.querySelectorAll('#estimate input:checked').forEach(function(c){{t+=+c.dataset.fee;r.push(c.dataset.n)}});document.getElementById('etot').textContent='₹'+t.toLocaleString('en-IN');document.getElementById('erows').textContent=r.length?r.join(' + '):'Select services to see the total.';return r}}
 document.querySelectorAll('#estimate input').forEach(function(c){{c.addEventListener('change',lwRows)}});function lwEst(){{var r=lwRows(),f=document.querySelector('form.lead');if(f&&r.length){{f.dataset.service=r[0];var n=f.querySelector('[name=note]');if(!n){{n=document.createElement('input');n.type='hidden';n.name='note';f.appendChild(n)}}n.value='Estimate: '+r.join(', ')}}}}</script>
 <style>.qi{{display:flex;gap:10px;align-items:flex-start;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:12px;cursor:pointer}}.qi small{{color:var(--muted)}}</style>"""
-    org = {"@context": "https://schema.org", "@type": "ProfessionalService", "name": "Legal Wegal", "url": SITE + "/", "telephone": PHONE, "email": "info@legalwegal.com", "areaServed": "IN", "priceRange": "₹₹"}
+    org = {"@context": "https://schema.org", "@type": "ProfessionalService", "name": "Legal Wegal", "url": SITE + "/", "telephone": PHONE, "email": "legalwegal.com@gmail.com", "areaServed": "IN", "priceRange": "₹₹"}
     write("index.html", page("/", "Legal Wegal – Company, GST, Trademark & FSSAI Registration Online in India",
           "Register your company, GST, trademark, FSSAI, IEC and more online with Legal Wegal. Clear prices, expert help on WhatsApp and live tracking in your client portal.", body, [org], preview), preview)
 
@@ -65,9 +65,9 @@ def core_pages(preview):
 <p>We handle company and LLP incorporation, GST, trademarks and copyright, food and trade licences, import-export codes, tax filings, payroll compliance and legal documentation. Every client gets a dedicated expert, updates on WhatsApp, and a personal client portal to upload documents, track progress and download certificates.</p>
 <p>We believe legal and compliance work should be simple and transparent: our fee and every government fee are shown before you start, and you always know the next step.</p>
 <p class="disc">Legal Wegal is a private facilitation provider and not a government website. Registrations and licences are issued by the respective government authorities.</p>""", preview)
-    simple("/contact/", "Contact Legal Wegal – Call, WhatsApp or Email", "Contact Legal Wegal on +91 93700 77727 (call or WhatsApp) or info@legalwegal.com.", "Contact us",
+    simple("/contact/", "Contact Legal Wegal – Call, WhatsApp or Email", "Contact Legal Wegal on +91 93700 77727 (call or WhatsApp) or legalwegal.com@gmail.com.", "Contact us",
         f"""<p class="lead">Call or WhatsApp us, or leave your number and an expert will call you back.</p>
-<ul class="tick"><li>Phone & WhatsApp: <a href="tel:{PHONE}">{PHONE_TXT}</a></li><li>Email: <a href="mailto:info@legalwegal.com">info@legalwegal.com</a></li><li>Hours: Monday–Saturday, 11 AM – 7 PM</li><li>Service: online across India</li></ul>
+<ul class="tick"><li>Phone & WhatsApp: <a href="tel:{PHONE}">{PHONE_TXT}</a></li><li>Email: <a href="mailto:legalwegal.com@gmail.com">legalwegal.com@gmail.com</a></li><li>Hours: Monday–Saturday, 11 AM – 7 PM</li><li>Service: online across India</li></ul>
 <p><a class="btn btn-wa" href="https://wa.me/{WA}">Chat on WhatsApp</a></p>""", preview)
     simple("/our-team/", "Our Team – Legal Wegal", "Meet the Legal Wegal team of business registration, tax and compliance experts.", "Our team",
         """<p class="lead">Our team of company secretaries, accountants, tax and trademark specialists and client relationship managers works together on every file.</p>
@@ -79,8 +79,8 @@ def core_pages(preview):
 <h3>How we use it</h3><p>To contact you about your enquiry, provide and track the services you ask for, file applications with government authorities on your behalf, send updates and reminders on WhatsApp, call or email, issue receipts and invoices, and meet legal obligations.</p>
 <h3>Sharing</h3><p>We share data only with government portals and authorities needed for your service, payment and communication providers that help us operate, and professionals working on your file. We do not sell your data.</p>
 <h3>Storage and security</h3><p>Documents are stored in private, access-controlled storage. Only the team working on your file can open them. We keep data only as long as needed for the service and legal requirements.</p>
-<h3>Your choices</h3><p>You can ask to access, correct or delete your data, or stop WhatsApp updates by replying STOP. Write to info@legalwegal.com.</p>
-<h3>Grievance officer</h3><p>For privacy concerns, contact our grievance officer at info@legalwegal.com.</p>""", preview, form=False)
+<h3>Your choices</h3><p>You can ask to access, correct or delete your data, or stop WhatsApp updates by replying STOP. Write to legalwegal.com@gmail.com.</p>
+<h3>Grievance officer</h3><p>For privacy concerns, contact our grievance officer at legalwegal.com@gmail.com.</p>""", preview, form=False)
     simple("/policy/terms-and-conditions/", "Terms & Conditions – Legal Wegal", "Terms for using the Legal Wegal website and services.", "Terms & conditions",
         """<p class="small">Last updated: 18 November 2026</p>
 <p>By using this website or our services you agree to these terms.</p>
@@ -89,7 +89,7 @@ def core_pages(preview):
 <h3>Your responsibilities</h3><p>You must provide true, complete documents and information. We are not responsible for delays or rejections caused by incorrect or missing information.</p>
 <h3>Refunds</h3><p>If we have not started work, our professional fee is refundable. Once filing has started, fees for work done and government fees already paid are not refundable.</p>
 <h3>Not legal advice</h3><p>Information on this website is general and not legal advice for your specific situation.</p>
-<h3>Contact</h3><p>info@legalwegal.com · +91 93700 77727</p>""", preview, form=False)
+<h3>Contact</h3><p>legalwegal.com@gmail.com · +91 93700 77727</p>""", preview, form=False)
 
     # old URL had a space: keep it working and point search engines to /our-team/
     write("our team/index.html", '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Our team – Legal Wegal</title><link rel="canonical" href="'+SITE+'/our-team/"><meta http-equiv="refresh" content="0; url=/our-team/"><meta name="robots" content="noindex"></head><body><a href="/our-team/">Our team</a></body></html>', preview)
