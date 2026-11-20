@@ -67,7 +67,7 @@ def core_pages(preview):
 <p class="disc">Legal Wegal is a private facilitation provider and not a government website. Registrations and licences are issued by the respective government authorities.</p>""", preview)
     simple("/contact/", "Contact Legal Wegal – Call, WhatsApp or Email", "Contact Legal Wegal on +91 93700 77727 (call or WhatsApp) or info@legalwegal.com.", "Contact us",
         f"""<p class="lead">Call or WhatsApp us, or leave your number and an expert will call you back.</p>
-<ul class="tick"><li>Phone & WhatsApp: <a href="tel:{PHONE}">{PHONE_TXT}</a></li><li>Email: <a href="mailto:info@legalwegal.com">info@legalwegal.com</a></li><li>Hours: Monday–Saturday, 9:30 AM – 7 PM</li><li>Service: online across India</li></ul>
+<ul class="tick"><li>Phone & WhatsApp: <a href="tel:{PHONE}">{PHONE_TXT}</a></li><li>Email: <a href="mailto:info@legalwegal.com">info@legalwegal.com</a></li><li>Hours: Monday–Saturday, 11 AM – 7 PM</li><li>Service: online across India</li></ul>
 <p><a class="btn btn-wa" href="https://wa.me/{WA}">Chat on WhatsApp</a></p>""", preview)
     simple("/our-team/", "Our Team – Legal Wegal", "Meet the Legal Wegal team of business registration, tax and compliance experts.", "Our team",
         """<p class="lead">Our team of company secretaries, accountants, tax and trademark specialists and client relationship managers works together on every file.</p>

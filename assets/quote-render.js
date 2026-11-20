@@ -26,7 +26,7 @@
       '<div class="meta"><h1>QUOTATION</h1><div class="sm">No. <b>' + esc(q.quote_no || 'Draft') + '</b><br>Date: ' + dt(q.date || new Date()) + '<br>Valid till: <b>' + dt(q.valid_till) + '</b></div></div></div>';
     h += '<div class="two"><div class="box"><h4>Prepared for</h4><b>' + esc(q.client_name) + '</b><br>' + esc(q.client_phone_masked || '') +
       (q.lead_code || q.client_place ? '<br>' + esc([q.lead_code ? 'Lead ' + q.lead_code : '', q.client_place].filter(Boolean).join(' · ')) : '') + '</div>' +
-      '<div class="box"><h4>Your expert</h4><b>' + esc(q.expert_name || 'Legal Wegal team') + '</b><br>WhatsApp ' + PHONE + '<br>Mon–Sat, 9:30 AM – 7 PM</div></div>';
+      '<div class="box"><h4>Your expert</h4><b>' + esc(q.expert_name || 'Legal Wegal team') + '</b><br>WhatsApp ' + PHONE + '<br>Mon–Sat, 11 AM – 7 PM</div></div>';
     h += '<p><b>Service:</b> ' + esc(q.service) + (q.service_details ? ' (' + esc(q.service_details) + ')' : '') + '</p>';
     h += '<table><tr><th>#</th><th>Description</th><th class="r">Amount (₹)</th></tr>';
     if (fee.length) h += '<tr class="sec"><td colspan="3">A. Our professional fee</td></tr>' + fee.map(row).join('');
