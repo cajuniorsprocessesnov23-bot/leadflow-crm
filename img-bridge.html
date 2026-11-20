@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><meta name="robots" content="noindex"><title>LW image bridge</title></head>
+<body>Image bridge (temporary, staff only)
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+// Temporary helper: receives compressed website images from legalwegal.com and uploads them
+// to the public 'site' bucket using the logged-in CRM staff session. Storage policies allow staff only.
+const sb=window.supabase.createClient('https://smedmzwiddhmxaznqoen.supabase.co','sb_publishable_Y14BKYhQ7k7xSL8jhX6vFg_scknKxpe');
+const OK=['https://www.legalwegal.com','https://legalwegal.com'];
+window.addEventListener('message',async e=>{
+  if(!OK.includes(e.origin))return;
+  const d=e.data||{};
+  try{
+    if(d.type==='ping'){const {data}=await sb.auth.getSession();e.source.postMessage({type:'pong',id:d.id,email:data.session?data.session.user.email:null},e.origin);return;}
+    if(d.type!=='upload')return;
+    const name=String(d.name||'').toLowerCase();
+    if(!/^[a-z0-9-]+\.(webp|png|jpg)$/.test(name))throw new Error('bad name');
+    const {error}=await sb.storage.from('site').upload(name,d.blob,{upsert:true,contentType:d.blob.type,cacheControl:'31536000'});
+    e.source.postMessage({type:'done',id:d.id,name,error:error?error.message:null},e.origin);
+  }catch(err){e.source.postMessage({type:'done',id:d.id,error:String(err.message||err)},e.origin);}
+});
+parent!==window&&parent.postMessage({type:'ready'},'*');
+</script></body></html>
