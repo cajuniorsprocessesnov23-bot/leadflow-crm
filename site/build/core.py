@@ -1,6 +1,6 @@
 """Core pages for the new legalwegal.com: home, about, contact, team, policies, partners."""
 import json
-from build import SVC, CATS, HUB, PRICES, e, inr, price_label, price_of, lead_form, page, write, PHONE, PHONE_TXT, WA, SB_URL, SB_KEY, SITE, IMG, FOUNDER
+from build import SVC, CATS, HUB, PRICES, e, inr, price_label, price_of, lead_form, page, write, PHONE, PHONE_TXT, WA, SB_URL, SB_KEY, SITE, IMG, FOUNDER, VIDEOS_HTML
 
 POPULAR = ["company-registration", "gst-registration", "trademark-registration", "fssai-registration", "llp-partnership",
            "one-person-company-registration", "online-iec-code-import-export-license", "itr", "gst-return-filing",
@@ -301,6 +301,7 @@ def home(preview):
 <section style="background:var(--soft)"><div class="wrap"><h2>Popular services</h2><div class="grid">{cards}</div></div></section>
 <section><div class="wrap"><h2>Offers & services in focus</h2><div class="bstrip">{strip}</div></div></section>
 <section style="padding:30px 0"><div class="wrap"><p class="small" style="text-align:center;margin:0 0 10px;text-transform:uppercase;letter-spacing:.08em">We are associated with</p><div class="clients">{clients}</div></div></section>
+{VIDEOS_HTML}
 <section><div class="wrap about"><figure class="founder"><img src="{IMG}{FOUNDER[0]}" width="{FOUNDER[1]}" height="{FOUNDER[2]}" alt="{FOUNDER[3]}" loading="lazy"><figcaption>Kunal Ahuja<small>Founder &amp; CEO, Legal Wegal</small></figcaption></figure>
 <div><h2>About Legal Wegal</h2><p class="lead">We help founders, small businesses and professionals across India get registered, licensed and compliant without office visits or confusing fees.</p>
 <ul class="tick"><li>Company, LLP, GST, trademark, FSSAI, IEC, BIS and more under one roof</li><li>Every client gets a relationship manager on WhatsApp</li><li>Government fees charged at actual cost, with receipts</li><li>Client portal to upload, track, pay and download certificates</li></ul>

@@ -49,6 +49,12 @@ SVC_BANNER = {
     "online-copyright-registration": ("copyright-registration-india.webp", 1400, 867, "Copyright registration in India"),
     "legal-notice": ("legal-services-scales-of-justice.webp", 1600, 1067, "Legal notice drafting by legal experts"),
 }
+# Client feedback videos from the old site (served from legalwegal.com/videos/; large files, so they load only when played)
+VIDEOS_HTML = ('<section style="background:var(--soft)"><div class="wrap"><h2>Customer feedback videos</h2><p class="lead">Hear from clients we have helped.</p>'
+    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px">'
+    + "".join(f'<figure style="margin:0;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 10px 26px rgba(11,42,91,.1)"><video controls playsinline preload="metadata" src="https://www.legalwegal.com/videos/{f}#t=1" style="width:100%;aspect-ratio:9/16;max-height:520px;background:#000;display:block" aria-label="{t}"></video><figcaption style="padding:10px 14px;font-weight:700;color:var(--brand)">{t}</figcaption></figure>'
+              for f, t in [("KB.mp4", "Client feedback"), ("bizleap.mp4", "BizLeap – client feedback"), ("gamer.mp4", "Client feedback")])
+    + '</div></div></section>')
 FOUNDER = ("kunal-ahuja-founder-ceo-legal-wegal.webp", 393, 487, "Kunal Ahuja, Founder and CEO of Legal Wegal")
 
 PHONE, PHONE_TXT, WA = "+919370077727", "+91 93700 77727", "919370077727"
@@ -221,6 +227,7 @@ def service_page(slug, d, preview=True):
         body = f"""<div class="hero"><div class="wrap"><div class="crumbs"><a href="/">Home</a> › Client feedback</div><div class="hgrid"><div><h1>{e(name)}</h1><p class="lead">{e(d['d'])}</p>
 <p>Real reviews from our clients appear on our Google Business profile. If you've worked with us, we'd love to hear from you.</p></div>
 <div class="card" id="enquire"><h3 style="margin:0 0 4px;color:var(--brand)">Share your feedback</h3><form class="lead" data-service="Feedback" novalidate><label>Your name</label><input name="name"><label>Mobile number</label><input name="phone" type="tel" maxlength="10"><label>Your feedback</label><textarea name="note" rows="4"></textarea><input name="hp" style="position:absolute;left:-9999px" tabindex="-1"><button class="btn btn-p" style="width:100%;margin-top:12px">Send feedback</button><div class="msg"></div></form></div></div></div></div>"""
+        body += "<main>" + VIDEOS_HTML + "</main>"
         return page(f"/services/{slug}/", "Client Feedback | Legal Wegal", d["d"][:155], body, None, preview)
     if d.get("special") == "why":
         pts = [("Clear prices", "Our fee and every government fee are shown before you start."), ("One expert, on WhatsApp", "A named expert handles your file and updates you at each step."), ("Your own client portal", "Upload documents, track status, pay and download certificates."), ("All of India, fully online", "No office visits needed; everything is done online.")]
