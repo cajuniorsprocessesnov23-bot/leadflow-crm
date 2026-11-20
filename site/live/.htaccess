@@ -1,0 +1,11 @@
+# 21 Nov 2026: old pages copied from another site now redirect (301) to Legal Wegal's own pages.
+<IfModule mod_alias.c>
+RedirectMatch 301 ^/fssai(/.*)?$ https://www.legalwegal.com/services/fssai-registration/
+RedirectMatch 301 ^/gst(/.*)?$ https://www.legalwegal.com/services/gst-registration/
+RedirectMatch 301 ^/business(/.*)?$ https://www.legalwegal.com/services/company-registration/
+RedirectMatch 301 ^/legal-services(/.*)?$ https://www.legalwegal.com/services/legal-notice/
+RedirectMatch 301 ^/trademark(/.*)?$ https://www.legalwegal.com/services/trademark-registration/
+RedirectMatch 301 ^/service/fssai-renewal(/.*)?$ https://www.legalwegal.com/services/fssai-renewal/
+RedirectMatch 301 ^/service/gst-return-filing(/.*)?$ https://www.legalwegal.com/services/gst-return-filing/
+RedirectMatch 301 ^/(news|press-release|author|category|tag)(/.*)?$ https://www.legalwegal.com/blog/
+</IfModule>
