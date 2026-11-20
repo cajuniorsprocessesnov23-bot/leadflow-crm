@@ -111,7 +111,7 @@ def footer_html():
     return f"""<footer><div class="wrap"><div class="fgrid">{''.join(cols)}</div>
 <div class="fgrid" style="margin-top:20px"><div><h4>Legal Wegal</h4><a href="tel:{PHONE}">{PHONE_TXT}</a><a href="mailto:legalwegal.com@gmail.com">legalwegal.com@gmail.com</a></div>
 <div><h4>Company</h4><a href="/about/">About us</a><a href="/contact/">Contact</a><a href="/our-team/">Our team</a><a href="/services/feedback/">Client feedback</a></div>
-<div><h4>For you</h4><a href="/Login/">Client login</a><a href="/partners/">Partner program</a><a href="/services/tc/">Why Legal Wegal</a></div>
+<div><h4>For you</h4><a href="/Login/">Client login</a><a href="/partners/">Partner program</a><a href="/blog/">Blog</a><a href="/community/">Community Q&amp;A</a><a href="/services/tc/">Why Legal Wegal</a></div>
 <div><h4>Legal</h4><a href="/policy/privacy-policy/">Privacy policy</a><a href="/policy/terms-and-conditions/">Terms & conditions</a></div></div>
 <div class="legal">© 2026 Legal Wegal. Legal Wegal is a private business registration and compliance facilitation provider and is not a government website. Registrations, licences and certificates are issued by the respective government authorities. Information on this website is general and is not legal advice.</div></div></footer>"""
 

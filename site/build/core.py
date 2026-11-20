@@ -95,6 +95,8 @@ def core_pages(preview):
     write("our team/index.html", '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Our team – Legal Wegal</title><link rel="canonical" href="'+SITE+'/our-team/"><meta http-equiv="refresh" content="0; url=/our-team/"><meta name="robots" content="noindex"></head><body><a href="/our-team/">Our team</a></body></html>', preview)
     partners(preview)
     quote_page(preview)
+    blog_pages(preview)
+    community_page(preview)
 
 PARTNER_APP = r"""<div id="pp" class="card" style="max-width:760px;margin:0 auto">
 <div id="pLogin"><h3 style="margin:0 0 4px;color:var(--brand)">Partner login / sign up</h3><p class="small">We send a 6-digit code to your WhatsApp.</p>
@@ -185,3 +187,69 @@ var a=document.getElementById('acc');if(a)a.onclick=async function(){a.disabled=
 a.outerHTML=(x.data?'<div style="width:100%;text-align:center;color:#0f8a6b"><b>✓ Thank you! Quotation accepted.</b> Pay the advance by UPI and send the screenshot on WhatsApp.</div>':'<div style="width:100%;text-align:center">Could not save. Please WhatsApp us.</div>')}})();
 </script></body></html>""".replace("__RENDER__", render).replace("__SB__", SB_URL).replace("__KEY__", SB_KEY)
     write("quote/index.html", html, preview)
+
+# ---------------- Blog & community (20 Nov) ----------------
+import blog_posts, qa_seed
+from datetime import date as _date
+
+def _dt(s):
+    d = _date.fromisoformat(s); return d.strftime("%-d %b %Y")
+
+BLOG_CSS = """<style>.post{max-width:780px}.post h2{margin:26px 0 8px}.post table{width:100%;border-collapse:collapse;margin:12px 0}.post th,.post td{border:1px solid var(--line);padding:8px;text-align:left}.post th{background:var(--soft)}
+.qa{border:1px solid var(--line);border-radius:14px;padding:16px;margin:12px 0;background:#fff}.qa h3{margin:0 0 6px;font-size:17px}.qa .ans{border-left:3px solid var(--brand2);padding-left:12px;margin-top:8px}.tagc{display:inline-block;font-size:12px;background:var(--soft);border-radius:20px;padding:2px 10px;margin-right:6px}</style>"""
+
+def blog_pages(preview):
+    cards = "".join(f'<a class="svc" href="/blog/{p["slug"]}/"><span class="tagc">{e(p["cat"])}</span><h3>{e(p["title"])}</h3><p>{e(p["desc"][:120])}…</p><b>Read →</b></a>' for p in blog_posts.POSTS)
+    body = f"""<div class="hero"><div class="wrap"><div class="crumbs"><a href="/">Home</a> › Blog</div><h1>Guides on business registration, tax and compliance</h1>
+<p class="lead">Clear, practical answers from the Legal Wegal team, written for founders and small business owners.</p></div></div>
+<main><section><div class="wrap"><div class="grid">{cards}</div><div id="dbPosts" class="grid" style="margin-top:16px"></div></div></section></main>{BLOG_CSS}
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script>(async function(){{try{{var sb=supabase.createClient('{SB_URL}','{SB_KEY}',{{auth:{{persistSession:false}}}});var r=await sb.from('blog_posts').select('slug,title,excerpt,category').eq('status','published').order('published_at',{{ascending:false}}).limit(50);var esc=function(t){{return String(t||'').replace(/[&<>"]/g,function(c){{return{{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}}[c]}})}};document.getElementById('dbPosts').innerHTML=(r.data||[]).map(function(p){{return '<a class="svc" href="/blog/post/?s='+encodeURIComponent(p.slug)+'"><span class="tagc">'+esc(p.category)+'</span><h3>'+esc(p.title)+'</h3><p>'+esc(p.excerpt)+'</p><b>Read →</b></a>'}}).join('')}}catch(x){{}}}})();</script>"""
+    write("blog/index.html", page("/blog/", "Blog – Company, GST, Trademark & Compliance Guides | Legal Wegal",
+          "Practical guides on company registration, GST, trademarks, FSSAI, import-export and compliance in India from the Legal Wegal team.", body, None, preview), preview)
+    for p in blog_posts.POSTS:
+        rel = "".join(f'<a class="svc" href="/services/{s}/"><h3>{e(SVC[s]["n"])}</h3><b>{price_label(s)}</b></a>' for s in p["related"] if s in SVC)
+        body = f"""<div class="hero"><div class="wrap"><div class="crumbs"><a href="/">Home</a> › <a href="/blog/">Blog</a> › {e(p["cat"])}</div><div class="hgrid"><div>
+<span class="chip">{e(p["cat"])} · {_dt(p["date"])} · Legal Wegal Team</span><h1>{e(p["title"])}</h1><p class="lead">{e(p["desc"])}</p></div>
+<div class="card" id="enquire"><h3 style="margin:0 0 4px;color:var(--brand)">Need help with this?</h3>{lead_form(SVC[p["related"][0]]["n"] if p["related"] else "General enquiry")}</div></div></div></div>
+<main><section><div class="wrap post">{p["html"]}<p class="disc">This article is general information, not legal advice. Rules and fees change; we confirm the latest position before filing.</p></div></section>
+<section style="background:var(--soft)"><div class="wrap"><h2>Related services</h2><div class="grid">{rel}</div></div></section></main>{BLOG_CSS}"""
+        art = {"@context": "https://schema.org", "@type": "Article", "headline": p["title"], "description": p["desc"], "datePublished": p["date"], "dateModified": p["date"],
+               "author": {"@type": "Organization", "name": "Legal Wegal"}, "publisher": {"@type": "Organization", "name": "Legal Wegal", "url": SITE + "/"},
+               "mainEntityOfPage": f'{SITE}/blog/{p["slug"]}/'}
+        write(f'blog/{p["slug"]}/index.html', page(f'/blog/{p["slug"]}/', f'{p["title"]} | Legal Wegal', p["desc"][:158], body, [art], preview), preview)
+    # Posts written later in the CRM
+    body = f"""<div class="hero"><div class="wrap"><div class="crumbs"><a href="/">Home</a> › <a href="/blog/">Blog</a></div><h1 id="pt">Loading…</h1><p class="lead" id="pe"></p></div></div>
+<main><section><div class="wrap post" id="pb"></div></section></main>{BLOG_CSS}
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script>(async function(){{var s=new URLSearchParams(location.search).get('s')||'';var sb=supabase.createClient('{SB_URL}','{SB_KEY}',{{auth:{{persistSession:false}}}});var r=await sb.from('blog_posts').select('title,excerpt,body_html,seo_title,seo_description').eq('slug',s).eq('status','published').maybeSingle();if(!r.data){{document.getElementById('pt').textContent='Article not found';return}}var p=r.data;document.title=(p.seo_title||p.title)+' | Legal Wegal';document.getElementById('pt').textContent=p.title;document.getElementById('pe').textContent=p.excerpt||'';document.getElementById('pb').innerHTML=p.body_html}})();</script>"""
+    write("blog/post/index.html", page("/blog/post/", "Blog | Legal Wegal", "Legal Wegal blog article.", body, None, True if preview else False).replace('<meta name="robots" content="index,follow">', '<meta name="robots" content="noindex,follow">'), preview)
+
+COMMUNITY_APP = r"""<div class="card" id="askBox" style="max-width:760px"><h3 style="margin:0 0 6px;color:var(--brand)">Ask a question</h3>
+<div id="cLogin"><p class="small">Log in with your mobile number. We send a code on WhatsApp. Your number is never shown publicly.</p><label>Mobile number</label><input id="cPhone" maxlength="10" inputmode="numeric"><button class="btn btn-p" style="margin-top:10px" onclick="cSend()">Send code</button><div id="cOtpBox" style="display:none"><label>Code</label><input id="cOtp" maxlength="6" inputmode="numeric"><button class="btn btn-p" style="margin-top:10px" onclick="cVerify()">Verify</button></div></div>
+<div id="cAsk" style="display:none"><label>Your name (shown with the question)</label><input id="cName"><label>Topic</label><select id="cCat"><option>GST</option><option>Company</option><option>Trademark</option><option>FSSAI</option><option>Licences</option><option>Tax</option><option>Legal</option><option>General</option></select>
+<label>Question</label><input id="cTitle" placeholder="e.g. Do I need GST for selling on Instagram?"><label>Details (optional)</label><textarea id="cBody" rows="3" style="width:100%"></textarea><button class="btn btn-p" style="margin-top:10px" onclick="cAskQ()">Post question</button></div><div class="msg" id="cMsg"></div></div>
+<div id="dbQ"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script>
+var csb=supabase.createClient('__SB__','__KEY__',{auth:{storageKey:'lw-community',persistSession:true}}),cPh='';function $c(i){return document.getElementById(i)}function cm(t,b){var m=$c('cMsg');m.style.color=b?'#c0392b':'';m.textContent=t}
+function cesc(t){return String(t||'').replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+async function cSend(){cPh=($c('cPhone').value||'').replace(/\D/g,'').slice(-10);if(!/^[6-9]\d{9}$/.test(cPh))return cm('Enter a valid 10-digit mobile number.',1);cm('Sending…');var r=await csb.auth.signInWithOtp({phone:'+91'+cPh,options:{channel:'sms'}});if(r.error)return cm(r.error.message,1);$c('cOtpBox').style.display='';cm('Code sent on WhatsApp.')}
+async function cVerify(){var r=await csb.auth.verifyOtp({phone:'+91'+cPh,token:($c('cOtp').value||'').trim(),type:'sms'});if(r.error)return cm(r.error.message,1);cm('');cInit()}
+async function cAskQ(){cm('Posting…');var r=await csb.rpc('community_ask',{p_title:$c('cTitle').value,p_body:$c('cBody').value,p_category:$c('cCat').value,p_name:$c('cName').value});if(r.error)return cm(r.error.message,1);$c('cTitle').value='';$c('cBody').value='';cm('Thank you! Your question will appear after a quick review, usually within a working day.')}
+async function cInit(){var s=(await csb.auth.getSession()).data.session;$c('cLogin').style.display=s?'none':'';$c('cAsk').style.display=s?'':'none'}
+(async function(){cInit();var q=await csb.from('community_questions').select('id,slug,title,body,category,asker_name,created_at').eq('status','approved').order('created_at',{ascending:false}).limit(50);var qs=q.data||[];if(!qs.length)return;var a=await csb.from('community_answers').select('question_id,body,answerer_name,is_staff_answer,upvotes').in('question_id',qs.map(function(x){return x.id})).eq('status','approved');var by={};(a.data||[]).forEach(function(x){(by[x.question_id]=by[x.question_id]||[]).push(x)});
+$c('dbQ').innerHTML='<h2>Latest questions</h2>'+qs.filter(function(x){return !window.LW_SEEDED||window.LW_SEEDED.indexOf(x.title)<0}).map(function(x){return '<div class="qa"><span class="tagc">'+cesc(x.category)+'</span><h3>'+cesc(x.title)+'</h3>'+(x.body?'<p class="small">'+cesc(x.body)+'</p>':'')+'<div class="small">Asked by '+cesc(x.asker_name)+'</div>'+(by[x.id]||[]).map(function(y){return '<div class="ans"><b>'+cesc(y.answerer_name)+(y.is_staff_answer?' ✓':'')+'</b><p>'+cesc(y.body)+'</p></div>'}).join('')+'</div>'}).join('')})();
+</script>"""
+
+def community_page(preview):
+    seeded = json.dumps([q for _, q, _ in qa_seed.QA])
+    cats = []
+    for c in dict.fromkeys(c for c, _, _ in qa_seed.QA):
+        items = "".join(f'<div class="qa"><span class="tagc">{e(c)}</span><h3>{e(q)}</h3><div class="ans"><b>Legal Wegal Expert ✓</b><p>{e(a)}</p></div></div>' for cc, q, a in qa_seed.QA if cc == c)
+        cats.append(f'<h2 id="{e(c.lower())}">{e(c)}</h2>{items}')
+    body = f"""<div class="hero"><div class="wrap"><div class="crumbs"><a href="/">Home</a> › Community Q&amp;A</div><h1>Ask the community: business, tax and legal questions answered</h1>
+<p class="lead">Get answers from Legal Wegal experts and other business owners. Free to ask; questions are reviewed before they appear.</p>
+<div class="chips">{''.join(f'<a class="chip" style="text-decoration:none" href="#{e(c.lower())}">{e(c)}</a>' for c in dict.fromkeys(c for c, _, _ in qa_seed.QA))}</div></div></div>
+<main><section><div class="wrap" style="max-width:860px"><script>window.LW_SEEDED={seeded};</script>{COMMUNITY_APP.replace('__SB__', SB_URL).replace('__KEY__', SB_KEY)}{''.join(cats)}
+<p class="disc">Answers are general information, not legal advice for your specific situation.</p></div></section></main>{BLOG_CSS}"""
+    faq = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for _, q, a in qa_seed.QA]}
+    write("community/index.html", page("/community/", "Community Q&A – GST, Company, Trademark & Legal Questions | Legal Wegal",
+          "Free answers to common questions on GST, company registration, trademarks, FSSAI, tax and legal matters in India from Legal Wegal experts.", body, [faq], preview), preview)

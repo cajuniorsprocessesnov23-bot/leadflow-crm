@@ -86,12 +86,14 @@ input:focus,textarea:focus{outline:2px solid var(--purple);border-color:transpar
       <button data-t="pay" onclick="tab('pay')">Payments</button>
       <button data-t="renew" onclick="tab('renew')">Renewals</button>
       <button data-t="new" onclick="tab('new')">+ New service</button>
+      <button data-t="refer" onclick="tab('refer')">Refer &amp; earn</button>
     </div>
     <div id="tab-services"></div>
     <div id="tab-docs" class="hide"></div>
     <div id="tab-pay" class="hide"></div>
     <div id="tab-renew" class="hide"></div>
     <div id="tab-new" class="hide"></div>
+    <div id="tab-refer" class="hide"></div>
   </section>
   <div id="loading" class="empty">Loading…</div>
 </main>
@@ -156,9 +158,9 @@ function render(){
   $('hello').textContent = first ? `Hello, ${first}` : 'Welcome';
   const n = data.services.length;
   $('sub').textContent = n ? `${n} service${n>1?'s':''} with Legal Wegal · +91 ${data.phone}` : `+91 ${data.phone}`;
-  renderServices(); renderDocs(); renderPay(); renderRenew(); renderNew();
+  renderServices(); renderDocs(); renderPay(); renderRenew(); renderNew(); renderRefer();
 }
-function tab(t){ document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on', b.dataset.t===t)); ['services','docs','pay','renew','new'].forEach(x=>$('tab-'+x).classList.toggle('hide', x!==t)); window.scrollTo(0,0); }
+function tab(t){ document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on', b.dataset.t===t)); ['services','docs','pay','renew','new','refer'].forEach(x=>$('tab-'+x).classList.toggle('hide', x!==t)); window.scrollTo(0,0); }
 const svcName = s => (s.services && s.services.length) ? s.services.join(', ') : 'Legal service';
 const statusPill = s => `<span class="pill ${s.step===4?'ok':s.step===1?'warn':''}">${esc(s.status)}</span>`;
 
@@ -256,6 +258,30 @@ function renderRenew(){
     const days = Math.ceil((new Date(r.due_date) - new Date()) / 864e5);
     return `<div class="row"><div><div>${esc(r.service)}</div><div class="muted">Due ${dt(r.due_date)} · ${days>=0?days+' days left':'overdue'}</div></div><button class="btn sm" onclick="quickRequest(${JSON.stringify(r.service).replace(/"/g,'&quot;')}, 'Renewal due ${dt(r.due_date)}')">Renew</button></div>`; }).join('')
     : '<p class="muted">No renewals due. We will remind you on WhatsApp before anything expires.</p>') + `</div>`;
+}
+
+async function renderRefer(){
+  const el = $('tab-refer'); el.innerHTML = '<div class="card"><p class="muted">Loading…</p></div>';
+  const { data: r, error } = await sb.rpc('client_referral_info');
+  if(error || !r){ el.innerHTML = '<div class="card"><p class="muted">Referrals are not available right now.</p></div>'; return; }
+  const link = 'https://www.legalwegal.com/?ref=' + r.code;
+  const reward = Number(r.reward) > 0 ? '₹' + Number(r.reward).toLocaleString('en-IN') : (Number(r.reward_pct) || 0) + '% of our fee';
+  const msg = encodeURIComponent('I got my work done with Legal Wegal: company, GST, trademark, FSSAI and more, fully online. Use my link: ' + link);
+  const st = { joined: 'Joined – waiting for first payment', payable: 'Reward due – we will pay to your UPI', paid: 'Paid', cancelled: 'Cancelled' };
+  el.innerHTML = `<div class="card"><h2>Refer a friend, earn ${esc(reward)}</h2>
+    <p class="muted">Share your link. When your friend pays for their first service, you get ${esc(reward)} in cash to your UPI.</p>
+    <div class="row"><div><div class="muted">Your code</div><b style="font-size:20px">${esc(r.code)}</b></div>
+    <a class="btn sm green" href="https://wa.me/?text=${msg}" target="_blank" rel="noopener">Share on WhatsApp</a></div>
+    <p class="muted" style="word-break:break-all">${esc(link)}</p>
+    <label>Your UPI ID for rewards</label><input id="refUpi" value="${esc(r.upi||'')}" placeholder="name@okicici">
+    <button class="btn" style="margin-top:10px" onclick="saveRefUpi()">Save UPI</button><div id="refMsg" class="muted"></div></div>
+    <div class="card"><h2>Your referrals</h2>` + ((r.referrals||[]).length ? r.referrals.map(x => `<div class="row"><div><div>${dt(x.date)}</div><div class="muted">${esc(st[x.status]||x.status)}</div></div><div>${x.reward?'₹'+Number(x.reward).toLocaleString('en-IN'):''}</div></div>`).join('')
+    : '<p class="muted">No referrals yet. Share your link to start earning.</p>') + `</div>`;
+}
+async function saveRefUpi(){
+  const v = ($('refUpi').value||'').trim(); $('refMsg').textContent = 'Saving…';
+  const { error } = await sb.rpc('client_set_referral_upi', { p_upi: v });
+  $('refMsg').textContent = error ? error.message : 'Saved. Rewards will be paid to ' + v + '.';
 }
 
 let chosen = new Set();
