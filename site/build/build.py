@@ -25,6 +25,32 @@ CATS = {"co": "Company & Business Registration", "gst": "GST", "tm": "Trademark 
 HUB = {"co": "company-registration-all", "gst": "gst-online", "tm": "trademark-all", "lic": "licenses",
        "comp": "compliance", "tax": "tax", "legal": "legal", "other": "other-services"}
 SITE = "https://www.legalwegal.com"
+# Legal Wegal's own images (copied from the old site, compressed, SEO file names) in the public Supabase 'site' bucket
+IMG = "https://smedmzwiddhmxaznqoen.supabase.co/storage/v1/object/public/site/"
+# service slug -> (image, width, height, alt)
+SVC_BANNER = {
+    "gst-return-filing": ("gst-return-filing-compliance-legal-wegal.webp", 1400, 700, "Outsource GST return filing and compliance to Legal Wegal"),
+    "gstr-9-annual-filing": ("gst-compliance-outsourcing-legal-wegal.webp", 1400, 560, "GST annual return and compliance by Legal Wegal"),
+    "online-gst-nil-return-filing": ("gst-nil-return-filing.webp", 1400, 959, "GST nil return filing online"),
+    "gst-modification": ("gst-registration-modification.webp", 1400, 933, "Modify your GST registration certificate"),
+    "itr": ("income-tax-consultation-legal-wegal.webp", 1400, 788, "Income tax filing and consultation by Legal Wegal"),
+    "online-tax-planning-consultancy": ("smart-tax-consultation-legal-wegal.webp", 1400, 788, "Smart tax consultation and strategic advisory"),
+    "consumer-complaint": ("consumer-dispute-legal-help-legal-wegal.webp", 1400, 700, "Consumer dispute help with online dispute resolution"),
+    "consumer-dispute-odr": ("consumer-dispute-legal-help-legal-wegal.webp", 1400, 700, "Consumer dispute help with online dispute resolution"),
+    "fssai-modification": ("fssai-license-modification-legal-wegal.webp", 1400, 643, "FSSAI FoSCoS food licence modification at low cost"),
+    "fssai-renewal": ("fssai-foscos-license-renewal.webp", 1400, 641, "FSSAI FoSCoS food licence renewal"),
+    "trademark-registration": ("trademark-registration-certificate.webp", 1400, 934, "Get your trademark registration certificate"),
+    "trademark-renewal": ("trademark-renewal-certificate.webp", 1400, 788, "Trademark renewal before the certificate expires"),
+    "series-trademark": ("trademark-certificate-india.webp", 1351, 564, "Trademark certificate in India"),
+    "trademark-all": ("trademark-renewal-india.webp", 1400, 934, "Trademark services in India"),
+    "online-annual-compliance-filing": ("annual-compliance-company-llp.webp", 1400, 933, "Annual compliance and ROC filing for companies and LLPs"),
+    "annual-compliance-bookkeeping": ("annual-compliance-filing-india.webp", 1400, 478, "Annual compliance and bookkeeping online"),
+    "online-apeda-registration": ("apeda-registration-india.webp", 1400, 513, "APEDA registration for agricultural and food exporters"),
+    "online-copyright-registration": ("copyright-registration-india.webp", 1400, 867, "Copyright registration in India"),
+    "legal-notice": ("legal-services-scales-of-justice.webp", 1600, 1067, "Legal notice drafting by legal experts"),
+}
+FOUNDER = ("kunal-ahuja-founder-ceo-legal-wegal.webp", 393, 487, "Kunal Ahuja, Founder and CEO of Legal Wegal")
+
 PHONE, PHONE_TXT, WA = "+919370077727", "+91 93700 77727", "919370077727"
 SB_URL, SB_KEY = "https://smedmzwiddhmxaznqoen.supabase.co", "sb_publishable_Y14BKYhQ7k7xSL8jhX6vFg_scknKxpe"
 e = lambda s: html.escape(str(s or ""), quote=True)
@@ -108,6 +134,10 @@ h1{color:var(--brand)}.svc:hover{border-color:#f7b48c}.price{color:var(--brand)}
 .feat div{display:flex;gap:14px;align-items:flex-start;background:var(--soft);border-radius:14px;padding:18px}.feat i{font-style:normal;font-size:26px}.feat b{display:block;color:var(--brand)}
 .why{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}@media(max-width:800px){.why{grid-template-columns:1fr 1fr}}
 .why div{text-align:center;border:1px solid var(--line);border-radius:14px;padding:18px 12px;background:#fff}.why i{font-style:normal;font-size:28px;display:block;margin-bottom:6px}.why b{color:var(--brand);font-size:14.5px}
+.logo img{height:44px;width:auto}.sbanner{width:100%;height:auto;max-height:420px;object-fit:contain;border-radius:16px;background:#fff;box-shadow:0 12px 30px rgba(11,42,91,.12)}
+.bstrip{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:8px}.bstrip a{flex:0 0 min(78%,420px);scroll-snap-align:start;border-radius:14px;overflow:hidden;box-shadow:0 8px 22px rgba(11,42,91,.12);background:#fff}.bstrip img{width:100%;height:210px;object-fit:cover;display:block}.bstrip span{display:block;padding:10px 12px;font-weight:700;color:var(--brand)}
+.founder{margin:0;text-align:center}.founder img{width:100%;max-width:340px;height:auto;border-radius:18px;background:linear-gradient(180deg,#eef3fb,#dfe8f6);box-shadow:0 18px 40px rgba(11,42,91,.15)}.founder figcaption{margin-top:10px;font-weight:700;color:var(--brand)}.founder figcaption small{display:block;font-weight:500;color:var(--muted,#5b6475)}
+.clients{display:flex;gap:26px;align-items:center;justify-content:center;flex-wrap:wrap}.clients img{height:90px;width:auto}
 .about{display:grid;grid-template-columns:.9fr 1.1fr;gap:34px;align-items:center}@media(max-width:800px){.about{grid-template-columns:1fr}}
 .about img,.ph{width:100%;border-radius:18px;object-fit:cover;box-shadow:0 18px 40px rgba(11,42,91,.15)}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;background:var(--brand);color:#fff;border-radius:18px;padding:22px}@media(max-width:700px){.stats{grid-template-columns:1fr 1fr}}
@@ -163,7 +193,7 @@ def page(path, title, desc, body, schema=None, preview=True):
 <meta name="theme-color" content="#1d1250"><link rel="icon" href="/favicon.png">{ld}<style>{CSS}</style></head><body>
 {'<div class="preview">Preview of the new Legal Wegal website – not live yet</div>' if preview else ''}
 <div class="topbar"><div class="wrap"><a href="tel:{PHONE}">📞 {PHONE_TXT}</a><a class="hide-m" href="mailto:legalwegal.com@gmail.com">✉ legalwegal.com@gmail.com</a><span class="hide-m">Mon–Sat, 11 AM – 7 PM</span><span class="r"><a href="/partners/">Partner with us</a><a href="/Login/">Client login</a></span></div></div>
-<header><div class="wrap nav"><a class="logo" href="/"><b>LW</b>Legal Wegal</a><nav class="menu">{nav_html()}</nav>
+<header><div class="wrap nav"><a class="logo" href="/"><img src="{IMG}legal-wegal-logo.webp?v=2" alt="Legal Wegal logo" width="71" height="44">Legal Wegal</a><nav class="menu">{nav_html()}</nav>
 <a class="btn btn-g" href="tel:{PHONE}">Call</a><a class="btn btn-p" href="#enquire">Free consultation</a></div></header>
 {body}{footer_html()}
 <a class="fab" href="https://wa.me/{WA}?text={e('Hi Legal Wegal, I need help')}" aria-label="WhatsApp"><svg width="26" height="26" viewBox="0 0 24 24" fill="#fff"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.1z"/></svg></a>
@@ -219,11 +249,13 @@ def service_page(slug, d, preview=True):
     fee_rows = (f'<tr><td><b>Our professional fee</b></td><td>{price_label(slug)}{(" — " + e(note)) if note else ""}</td></tr>'
                 f'<tr><td><b>Government fees</b></td><td>{e(govt)}. Paid to the government at actual cost; we show you the exact amount before filing.</td></tr>'
                 f'<tr><td><b>Timeline</b></td><td>{e(d.get("time",""))}</td></tr>')
+    bn = SVC_BANNER.get(slug)
+    banner = (f'<section style="padding-bottom:0;border:0"><div class="wrap"><img class="sbanner" src="{IMG}{bn[0]}" width="{bn[1]}" height="{bn[2]}" alt="{e(bn[3])}" loading="lazy"></div></section>') if bn else ""
     body = f"""<div class="hero"><div class="wrap"><div class="crumbs"><a href="/">Home</a> › <a href="/services/{HUB[cat]}/">{e(CATS[cat])}</a> › {e(name)}</div>
 <div class="hgrid"><div><h1>{e(name)} Online in India</h1><p class="lead">{e(d['d'])}</p><div class="chips">{chips}</div>
 <a class="btn btn-wa" href="https://wa.me/{WA}?text={e('Hi, I need help with ' + name)}">Ask on WhatsApp</a></div>
 <div class="card" id="enquire">{fee_line}<p class="small" style="margin:4px 0 10px">+ government fees at actuals · exact quote before payment</p>{lead_form(name, 'Get started')}</div></div></div></div>
-<main>
+<main>{banner}
 <section><div class="wrap cols"><div><h2>Who needs {e(name)}?</h2><ul class="tick">{who}</ul></div><div><h2>Documents required</h2><ul class="tick">{docs}</ul></div></div></section>
 <section><div class="wrap"><h2>How it works</h2><ol class="steps">{steps}</ol></div></section>
 <section><div class="wrap"><h2>Fees and government charges</h2><table class="fees"><tr><th style="width:32%">Item</th><th>Details</th></tr>{fee_rows}</table>

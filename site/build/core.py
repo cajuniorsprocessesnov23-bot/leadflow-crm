@@ -1,6 +1,6 @@
 """Core pages for the new legalwegal.com: home, about, contact, team, policies, partners."""
 import json
-from build import SVC, CATS, HUB, PRICES, e, inr, price_label, price_of, lead_form, page, write, PHONE, PHONE_TXT, WA, SB_URL, SB_KEY, SITE
+from build import SVC, CATS, HUB, PRICES, e, inr, price_label, price_of, lead_form, page, write, PHONE, PHONE_TXT, WA, SB_URL, SB_KEY, SITE, IMG, FOUNDER
 
 POPULAR = ["company-registration", "gst-registration", "trademark-registration", "fssai-registration", "llp-partnership",
            "one-person-company-registration", "online-iec-code-import-export-license", "itr", "gst-return-filing",
@@ -61,7 +61,7 @@ def simple(path, title, desc, h1, html_body, preview, form=True):
 def core_pages(preview):
     home(preview)
     simple("/about/", "About Legal Wegal – Business Registration & Compliance Experts", "Legal Wegal helps Indian businesses register, license and stay compliant with clear prices and expert help on WhatsApp.", "About Legal Wegal",
-        """<p class="lead">Legal Wegal helps founders, small businesses and professionals across India get registered, licensed and compliant — without office visits or confusing fees.</p>
+        f"""<div class="about" style="margin-bottom:22px"><figure class="founder"><img src="{IMG}{FOUNDER[0]}" width="{FOUNDER[1]}" height="{FOUNDER[2]}" alt="{FOUNDER[3]}" loading="lazy"><figcaption>Kunal Ahuja<small>Founder &amp; CEO, Legal Wegal</small></figcaption></figure><div><p class="lead">Legal Wegal helps founders, small businesses and professionals across India get registered, licensed and compliant — without office visits or confusing fees.</p><p>Legal Wegal was founded by <b>Kunal Ahuja</b>, who leads the company as Founder &amp; CEO.</p></div></div>
 <p>We handle company and LLP incorporation, GST, trademarks and copyright, food and trade licences, import-export codes, tax filings, payroll compliance and legal documentation. Every client gets a dedicated expert, updates on WhatsApp, and a personal client portal to upload documents, track progress and download certificates.</p>
 <p>We believe legal and compliance work should be simple and transparent: our fee and every government fee are shown before you start, and you always know the next step.</p>
 <p class="disc">Legal Wegal is a private facilitation provider and not a government website. Registrations and licences are issued by the respective government authorities.</p>""", preview)
@@ -70,7 +70,8 @@ def core_pages(preview):
 <ul class="tick"><li>Phone & WhatsApp: <a href="tel:{PHONE}">{PHONE_TXT}</a></li><li>Email: <a href="mailto:legalwegal.com@gmail.com">legalwegal.com@gmail.com</a></li><li>Hours: Monday–Saturday, 11 AM – 7 PM</li><li>Service: online across India</li></ul>
 <p><a class="btn btn-wa" href="https://wa.me/{WA}">Chat on WhatsApp</a></p>""", preview)
     simple("/our-team/", "Our Team – Legal Wegal", "Meet the Legal Wegal team of business registration, tax and compliance experts.", "Our team",
-        """<p class="lead">Our team of company secretaries, accountants, tax and trademark specialists and client relationship managers works together on every file.</p>
+        f"""<div class="about" style="margin-bottom:22px"><figure class="founder"><img src="{IMG}{FOUNDER[0]}" width="{FOUNDER[1]}" height="{FOUNDER[2]}" alt="{FOUNDER[3]}" loading="lazy"><figcaption>Kunal Ahuja<small>Founder &amp; CEO, Legal Wegal</small></figcaption></figure><div><h2>Kunal Ahuja – Founder &amp; CEO</h2><p>Kunal founded Legal Wegal to make business registration and compliance simple, transparent and fully online for Indian businesses.</p></div></div>
+<p class="lead">Our team of company secretaries, accountants, tax and trademark specialists and client relationship managers works together on every file.</p>
 <p>Each client is assigned a relationship manager who stays in touch on WhatsApp, and an expert who prepares and files the work.</p>""", preview)
     simple("/policy/privacy-policy/", "Privacy Policy – Legal Wegal", "How Legal Wegal collects, uses and protects your personal data.", "Privacy policy",
         """<p class="small">Last updated: 18 November 2026</p>
@@ -273,6 +274,7 @@ def home(preview):
                          [r"llp|partner", ["llp-partnership"]], [r"export|import", ["online-iec-code-import-export-license", "gst-lut-filing"]], [r"gst", ["gst-registration", "gst-return-filing"]],
                          [r"jewel|gold|hallmark", ["bis-certificate", "gst-registration"]], [r"tax|itr|income", ["itr"]], [r"notice|dispute|consumer|refund", ["legal-notice"]], [r"rent|lease|tenant", ["rent-agreement"]]])
     names = json.dumps({s: SVC[s]["n"] for s in SVC})
+    strip = "".join(f'<a href="/services/{s}/"><img src="{IMG}{f}" alt="{e(t)} – Legal Wegal" loading="lazy" width="420" height="210"><span>{e(t)} →</span></a>' for f, t, s in [("gst-compliance-outsourcing-legal-wegal.webp","Outsource your GST compliance","gst-return-filing"),("trademark-registration-certificate.webp","Get your trademark certificate","trademark-registration"),("fssai-license-modification-legal-wegal.webp","FSSAI food licence at low cost","fssai-modification"),("smart-tax-consultation-legal-wegal.webp","Smart tax consultation","online-tax-planning-consultancy"),("annual-compliance-company-llp.webp","Annual compliance & filing","online-annual-compliance-filing"),("consumer-dispute-legal-help-legal-wegal.webp","Got a consumer dispute?","consumer-complaint"),("gst-nil-return-filing.webp","GST nil return filing","online-gst-nil-return-filing")] if s in SVC)
     body = f"""<div class="hbanner" style="background-image:url('{PH["hero"]}')"><div class="wrap">
 <div><span class="chip">India's online business registration & compliance partner</span>
 <h1>Register, license and protect your business — fully online</h1>
@@ -284,7 +286,9 @@ def home(preview):
 <main>
 <section style="border:0"><div class="wrap"><div class="feat"><div><i>💬</i><span><b>Expert on WhatsApp</b>A dedicated expert answers your questions and guides every step.</span></div><div><i>💰</i><span><b>Clear, fixed fees</b>Our fee and every government fee are shown before you pay.</span></div><div><i>📱</i><span><b>100% online</b>Upload documents from your phone and track progress in your portal.</span></div></div></div></section>
 <section style="background:var(--soft)"><div class="wrap"><h2>Popular services</h2><div class="grid">{cards}</div></div></section>
-<section><div class="wrap about"><img loading="lazy" src="{PH["about"]}" alt="Business owner checking registration status on a tablet">
+<section><div class="wrap"><h2>Offers & services in focus</h2><div class="bstrip">{strip}</div></div></section>
+<section style="padding:30px 0"><div class="wrap"><p class="small" style="text-align:center;margin:0 0 10px;text-transform:uppercase;letter-spacing:.08em">Our clients include</p><div class="clients"><img src="{IMG}client-swiggy-zomato.webp" width="500" height="500" alt="Swiggy and Zomato logos – Legal Wegal clients" loading="lazy" style="height:110px"></div></div></section>
+<section><div class="wrap about"><figure class="founder"><img src="{IMG}{FOUNDER[0]}" width="{FOUNDER[1]}" height="{FOUNDER[2]}" alt="{FOUNDER[3]}" loading="lazy"><figcaption>Kunal Ahuja<small>Founder &amp; CEO, Legal Wegal</small></figcaption></figure>
 <div><h2>About Legal Wegal</h2><p class="lead">We help founders, small businesses and professionals across India get registered, licensed and compliant without office visits or confusing fees.</p>
 <ul class="tick"><li>Company, LLP, GST, trademark, FSSAI, IEC, BIS and more under one roof</li><li>Every client gets a relationship manager on WhatsApp</li><li>Government fees charged at actual cost, with receipts</li><li>Client portal to upload, track, pay and download certificates</li></ul>
 <p style="margin-top:16px"><a class="btn btn-p" href="/about/">Know more</a> <a class="btn btn-g" href="https://wa.me/{WA}">Chat on WhatsApp</a></p></div></div></section>
@@ -305,6 +309,6 @@ def home(preview):
 <section style="border:0"><div class="wrap"><div class="cta"><h2>Talk to an expert today, free</h2><span><a class="btn" style="background:#fff;color:var(--brand)" href="tel:{PHONE}">Call {PHONE_TXT}</a> <a class="btn btn-wa" href="https://wa.me/{WA}">WhatsApp</a></span></div></div></section>
 </main>
 <script>var LWF={finder},LWN={names};function lwFind(ev){{ev.preventDefault();var q=document.getElementById('fq').value,out=[];LWF.forEach(function(r){{if(new RegExp(r[0],'i').test(q))r[1].forEach(function(s){{if(out.indexOf(s)<0&&LWN[s])out.push(s)}})}});document.getElementById('fres').innerHTML=out.length?out.map(function(s){{return '<a class="chip" style="text-decoration:none" href="/services/'+s+'/">'+LWN[s]+' →</a>'}}).join(''):'<span class="chip">Tell us in the form and an expert will suggest the right services.</span>';return false}}</script>"""
-    org = {"@context": "https://schema.org", "@type": "ProfessionalService", "name": "Legal Wegal", "url": SITE + "/", "telephone": PHONE, "email": "legalwegal.com@gmail.com", "areaServed": "IN", "priceRange": "₹₹", "image": PH["hero"]}
+    org = {"@context": "https://schema.org", "@type": "ProfessionalService", "name": "Legal Wegal", "url": SITE + "/", "telephone": PHONE, "email": "legalwegal.com@gmail.com", "areaServed": "IN", "priceRange": "₹₹", "image": PH["hero"], "logo": IMG + "legal-wegal-logo.webp", "founder": {"@type": "Person", "name": "Kunal Ahuja", "jobTitle": "Founder & CEO", "image": IMG + FOUNDER[0]}}
     write("index.html", page("/", "Legal Wegal – Company, GST, Trademark & FSSAI Registration Online in India",
           "Register your company, GST, trademark, FSSAI, IEC and more online with Legal Wegal. Clear prices, expert help on WhatsApp and live tracking in your client portal.", body, [org], preview), preview)
