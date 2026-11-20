@@ -50,11 +50,14 @@ SVC_BANNER = {
     "legal-notice": ("legal-services-scales-of-justice.webp", 1600, 1067, "Legal notice drafting by legal experts"),
 }
 # Client feedback videos from the old site (served from legalwegal.com/videos/; large files, so they load only when played)
-VIDEOS_HTML = ('<section style="background:var(--soft)"><div class="wrap"><h2>Customer feedback videos</h2><p class="lead">Hear from clients we have helped.</p>'
+VIDEOS_HTML = ('<section style="background:var(--soft)"><div class="wrap"><h2>Customer feedback videos</h2><p class="lead">Hear from founders we have helped.</p>'
     '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px">'
-    + "".join(f'<figure style="margin:0;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 10px 26px rgba(11,42,91,.1)"><video controls playsinline preload="metadata" src="https://www.legalwegal.com/videos/{f}#t=1" style="width:100%;aspect-ratio:9/16;max-height:520px;background:#000;display:block" aria-label="{t}"></video><figcaption style="padding:10px 14px;font-weight:700;color:var(--brand)">{t}</figcaption></figure>'
-              for f, t in [("KB.mp4", "Client feedback"), ("bizleap.mp4", "BizLeap – client feedback"), ("gamer.mp4", "Client feedback")])
-    + '</div></div></section>')
+    + "".join(f'<figure style="margin:0;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 10px 26px rgba(11,42,91,.1)"><video class="lwv" muted autoplay loop playsinline controls preload="none" data-src="https://www.legalwegal.com/videos/{f}" style="width:100%;aspect-ratio:9/16;max-height:520px;background:#000;display:block" aria-label="Video feedback from {n}, {r}"></video><figcaption style="padding:10px 14px"><b style="display:block;color:var(--brand)">{n}</b><small style="color:#5b6475">{r}</small></figcaption></figure>'
+              for f, n, r in [("gamer.mp4", "Mohit Hirani", "Founder, The Gaming Loft"), ("bizleap.mp4", "Akshat Soni", "Co-Founder, BizLeap"), ("KB.mp4", "Om Chaturvadi", "Co-Founder, Chartered Studies")])
+    + '</div></div></section>'
+    # Videos are large: load and play (muted) only when scrolled into view; pause when out of view.
+    '<script>(function(){var vs=document.querySelectorAll("video.lwv");function on(v){if(!v.src){v.src=v.dataset.src}var p=v.play();p&&p.catch(function(){})}'
+    'if(!("IntersectionObserver" in window)){vs.forEach(on);return}var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)on(e.target);else e.target.pause()})},{threshold:.35});vs.forEach(function(v){io.observe(v)})})();</script>')
 FOUNDER = ("kunal-ahuja-founder-ceo-legal-wegal.webp", 393, 487, "Kunal Ahuja, Founder and CEO of Legal Wegal")
 
 PHONE, PHONE_TXT, WA = "+919370077727", "+91 93700 77727", "919370077727"
