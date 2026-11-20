@@ -52,7 +52,7 @@ def price_label(slug, short=False):
     return f"{starting}{inr(p['fee'])}{e(p.get('unit',''))}"
 
 CSS = """
-:root{--ink:#17132b;--muted:#5f5a75;--line:#e7e3f2;--soft:#f6f4fc;--brand:#1d1250;--brand2:#4b2bd1;--accent:#f2b544;--ok:#0f8a6b;--r:14px}
+:root{--ink:#14213d;--muted:#5b6478;--line:#e3e8f0;--soft:#f3f6fb;--brand:#0b2a5b;--brand2:#f26b21;--accent:#ffb703;--ok:#0f8a6b;--r:12px}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);line-height:1.6;font-size:16px;background:#fff}
 a{color:var(--brand2)}img,svg{display:block}.wrap{max-width:1160px;margin:0 auto;padding:0 20px}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:12px;padding:12px 18px;font:600 15px/1.1 inherit;cursor:pointer;text-decoration:none}
@@ -92,6 +92,27 @@ footer h4{color:#fff;margin:0 0 10px;font-size:14px}footer a{display:block;color
 .mbar{display:none}@media(max-width:700px){.mbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:30;background:#fff;border-top:1px solid var(--line);padding:8px;gap:8px}.mbar a{flex:1}body{padding-bottom:64px}.fab{display:none}}
 .fab{position:fixed;right:18px;bottom:18px;z-index:30;width:54px;height:54px;border-radius:50%;background:#1fa855;display:grid;place-items:center;box-shadow:0 8px 20px rgba(0,0,0,.2)}
 .preview{background:var(--accent);color:#3b2a00;text-align:center;font-size:13px;padding:5px}
+.topbar{background:var(--brand);color:#dbe4f3;font-size:13px}.topbar .wrap{display:flex;gap:18px;align-items:center;height:36px}.topbar a{color:#fff;text-decoration:none}.topbar .r{margin-left:auto;display:flex;gap:16px}
+@media(max-width:700px){.topbar .hide-m{display:none}}
+.logo b{background:var(--brand2);color:#fff}.btn-p{background:var(--brand2)}.btn-p:hover{background:#d95a14}
+h1{color:var(--brand)}.svc:hover{border-color:#f7b48c}.price{color:var(--brand)}
+.hbanner{position:relative;color:#fff;background:#0b2a5b center/cover no-repeat;overflow:hidden}
+.hbanner:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(8,26,58,.94) 0%,rgba(8,26,58,.82) 48%,rgba(8,26,58,.35) 100%)}
+.hbanner .wrap{position:relative;display:grid;grid-template-columns:1.15fr .85fr;gap:34px;align-items:center;padding-top:44px;padding-bottom:44px}@media(max-width:900px){.hbanner .wrap{grid-template-columns:1fr}}
+.hbanner h1{color:#fff;font-size:clamp(32px,4.4vw,50px)}.hbanner .lead{color:#dbe4f3}.hbanner .chip{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25);color:#fff}
+.hbanner .card{color:var(--ink)}
+.tiles{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-top:-34px;position:relative;z-index:2}@media(max-width:900px){.tiles{grid-template-columns:repeat(3,1fr);margin-top:16px}}
+.tile{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 10px;text-align:center;text-decoration:none;color:var(--brand);font-weight:600;font-size:14px;box-shadow:0 10px 24px rgba(11,42,91,.08)}
+.tile i{font-style:normal;display:grid;place-items:center;width:46px;height:46px;margin:0 auto 8px;border-radius:50%;background:#fff1e8;font-size:22px}.tile:hover{border-color:var(--brand2)}
+.feat{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}@media(max-width:800px){.feat{grid-template-columns:1fr}}
+.feat div{display:flex;gap:14px;align-items:flex-start;background:var(--soft);border-radius:14px;padding:18px}.feat i{font-style:normal;font-size:26px}.feat b{display:block;color:var(--brand)}
+.why{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}@media(max-width:800px){.why{grid-template-columns:1fr 1fr}}
+.why div{text-align:center;border:1px solid var(--line);border-radius:14px;padding:18px 12px;background:#fff}.why i{font-style:normal;font-size:28px;display:block;margin-bottom:6px}.why b{color:var(--brand);font-size:14.5px}
+.about{display:grid;grid-template-columns:.9fr 1.1fr;gap:34px;align-items:center}@media(max-width:800px){.about{grid-template-columns:1fr}}
+.about img,.ph{width:100%;border-radius:18px;object-fit:cover;box-shadow:0 18px 40px rgba(11,42,91,.15)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;background:var(--brand);color:#fff;border-radius:18px;padding:22px}@media(max-width:700px){.stats{grid-template-columns:1fr 1fr}}
+.stats div{text-align:center}.stats b{display:block;font-size:28px;color:var(--accent)}.stats span{font-size:13px;color:#dbe4f3}
+.svc .ic{font-size:24px}.cta{background:linear-gradient(90deg,#f26b21,#ff9a3c);color:#fff;border-radius:18px;padding:26px;display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}.cta h2{color:#fff;margin:0}
 """
 
 def nav_html():
@@ -112,8 +133,8 @@ def footer_html():
 <div class="fgrid" style="margin-top:20px"><div><h4>Legal Wegal</h4><a href="tel:{PHONE}">{PHONE_TXT}</a><a href="mailto:legalwegal.com@gmail.com">legalwegal.com@gmail.com</a></div>
 <div><h4>Company</h4><a href="/about/">About us</a><a href="/contact/">Contact</a><a href="/our-team/">Our team</a><a href="/services/feedback/">Client feedback</a></div>
 <div><h4>For you</h4><a href="/Login/">Client login</a><a href="/partners/">Partner program</a><a href="/blog/">Blog</a><a href="/community/">Community Q&amp;A</a><a href="/services/tc/">Why Legal Wegal</a></div>
-<div><h4>Legal</h4><a href="/policy/privacy-policy/">Privacy policy</a><a href="/policy/terms-and-conditions/">Terms & conditions</a></div></div>
-<div class="legal">© 2026 Legal Wegal. Legal Wegal is a private business registration and compliance facilitation provider and is not a government website. Registrations, licences and certificates are issued by the respective government authorities. Information on this website is general and is not legal advice.</div></div></footer>"""
+<div><h4>Legal</h4><a href="/policy/privacy-policy/">Privacy policy</a><a href="/policy/terms-and-conditions/">Terms & conditions</a><a href="https://g.page/r/CVpQ2RBis-UtEAE/review" rel="noopener">Review us on Google</a></div></div>
+<div class="legal">© 2026 Legal Wegal. Legal Wegal is a private business registration and compliance facilitation provider and is not a government website. Registrations, licences and certificates are issued by the respective government authorities. Information on this website is general and is not legal advice. Stock photos: Unsplash.</div></div></footer>"""
 
 LEAD_JS = """<script>
 (function(){var SB='%s',KEY='%s';var q=new URLSearchParams(location.search);['utm_source','utm_campaign','gclid','fbclid','ref'].forEach(function(k){var v=q.get(k);if(v)try{localStorage.setItem('lw_'+k,v)}catch(e){}});
@@ -141,6 +162,7 @@ def page(path, title, desc, body, schema=None, preview=True):
 <meta property="og:title" content="{e(title)}"><meta property="og:description" content="{e(desc)}"><meta property="og:url" content="{e(canon)}"><meta property="og:type" content="website"><meta property="og:site_name" content="Legal Wegal">
 <meta name="theme-color" content="#1d1250"><link rel="icon" href="/favicon.png">{ld}<style>{CSS}</style></head><body>
 {'<div class="preview">Preview of the new Legal Wegal website – not live yet</div>' if preview else ''}
+<div class="topbar"><div class="wrap"><a href="tel:{PHONE}">📞 {PHONE_TXT}</a><a class="hide-m" href="mailto:legalwegal.com@gmail.com">✉ legalwegal.com@gmail.com</a><span class="hide-m">Mon–Sat, 11 AM – 7 PM</span><span class="r"><a href="/partners/">Partner with us</a><a href="/Login/">Client login</a></span></div></div>
 <header><div class="wrap nav"><a class="logo" href="/"><b>LW</b>Legal Wegal</a><nav class="menu">{nav_html()}</nav>
 <a class="btn btn-g" href="tel:{PHONE}">Call</a><a class="btn btn-p" href="#enquire">Free consultation</a></div></header>
 {body}{footer_html()}

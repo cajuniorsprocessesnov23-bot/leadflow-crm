@@ -253,3 +253,58 @@ def community_page(preview):
     faq = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for _, q, a in qa_seed.QA]}
     write("community/index.html", page("/community/", "Community Q&A – GST, Company, Trademark & Legal Questions | Legal Wegal",
           "Free answers to common questions on GST, company registration, trademarks, FSSAI, tax and legal matters in India from Legal Wegal experts.", body, [faq], preview), preview)
+
+# ---------- Home page v2 (20 Nov): photo banner + icon tiles, in the style Kunal asked for ----------
+U = "https://images.unsplash.com/"
+PH = {"hero": U + "photo-1771244688590-1e481dba1b5a?w=1600&q=70&auto=format&fit=crop",
+      "about": U + "photo-1656236577401-6c60e0baeed5?w=900&q=70&auto=format&fit=crop",
+      "docs": U + "photo-1562564055-71e051d33c19?w=900&q=70&auto=format&fit=crop",
+      "meet": U + "photo-1656221008533-ebae2be98b48?w=900&q=70&auto=format&fit=crop"}
+TILES = [("🏢", "Company", "company-registration"), ("🧾", "GST", "gst-registration"), ("™️", "Trademark", "trademark-registration"),
+         ("🍽️", "FSSAI", "fssai-registration"), ("🌐", "Import-Export", "online-iec-code-import-export-license"), ("📊", "Income Tax", "itr")]
+ICON = {"co": "🏢", "gst": "🧾", "tm": "™️", "lic": "📜", "comp": "📅", "tax": "📊", "legal": "⚖️", "other": "🧩"}
+
+def home(preview):
+    tiles = "".join(f'<a class="tile" href="/services/{s}/"><i>{i}</i>{e(n)}</a>' for i, n, s in TILES if s in SVC)
+    cards = "".join(f'<a class="svc" href="/services/{s}/"><span class="ic">{ICON.get(SVC[s]["c"], "📄")}</span><h3>{e(SVC[s]["n"])}</h3><p>{e(SVC[s]["d"][:105])}…</p><b>{price_label(s)}</b></a>' for s in POPULAR if s in SVC)
+    cats = "".join(f'<details><summary>{ICON.get(c, "📄")} {e(l)}</summary><p>' + " · ".join(f'<a href="/services/{s}/">{e(d["n"])}</a>' for s, d in sorted(SVC.items(), key=lambda x: x[1]["n"]) if d["c"] == c and not d.get("hub") and not d.get("special")) + f'</p><p><a href="/services/{HUB[c]}/"><b>All {e(l)} →</b></a></p></details>' for c, l in CATS.items())
+    finder = json.dumps([[r"restaurant|food|cafe|bakery|kitchen|sweet", ["fssai-registration", "gst-registration", "trade-license"]],
+                         [r"brand|logo|name|trademark", ["trademark-registration"]], [r"company|startup|pvt|private|fund", ["company-registration", "trademark-registration", "gst-registration"]],
+                         [r"llp|partner", ["llp-partnership"]], [r"export|import", ["online-iec-code-import-export-license", "gst-lut-filing"]], [r"gst", ["gst-registration", "gst-return-filing"]],
+                         [r"jewel|gold|hallmark", ["bis-certificate", "gst-registration"]], [r"tax|itr|income", ["itr"]], [r"notice|dispute|consumer|refund", ["legal-notice"]], [r"rent|lease|tenant", ["rent-agreement"]]])
+    names = json.dumps({s: SVC[s]["n"] for s in SVC})
+    body = f"""<div class="hbanner" style="background-image:url('{PH["hero"]}')"><div class="wrap">
+<div><span class="chip">India's online business registration & compliance partner</span>
+<h1>Register, license and protect your business — fully online</h1>
+<p class="lead">Company, GST, trademark, FSSAI, import-export, tax and legal services across India. Clear fees before you start, documents uploaded from your phone and live status in your client portal.</p>
+<form style="display:flex;gap:8px;margin-top:18px;max-width:560px" onsubmit="return lwFind(event)"><input id="fq" style="flex:1;padding:13px;border:0;border-radius:10px;font:inherit" placeholder="What do you need? e.g. start a restaurant"><button class="btn btn-p">Find</button></form>
+<div id="fres" class="chips"></div><div class="chips"><span class="chip">✓ Fees shown upfront</span><span class="chip">✓ Expert on WhatsApp</span><span class="chip">✓ Track in your portal</span></div></div>
+<div class="card" id="enquire"><h3 style="margin:0 0 4px;color:var(--brand)">Get a free consultation</h3><p class="small">An expert calls you back within working hours.</p>{lead_form('General enquiry','Request call back')}</div></div></div>
+<div class="wrap"><div class="tiles">{tiles}</div></div>
+<main>
+<section style="border:0"><div class="wrap"><div class="feat"><div><i>💬</i><span><b>Expert on WhatsApp</b>A dedicated expert answers your questions and guides every step.</span></div><div><i>💰</i><span><b>Clear, fixed fees</b>Our fee and every government fee are shown before you pay.</span></div><div><i>📱</i><span><b>100% online</b>Upload documents from your phone and track progress in your portal.</span></div></div></div></section>
+<section style="background:var(--soft)"><div class="wrap"><h2>Popular services</h2><div class="grid">{cards}</div></div></section>
+<section><div class="wrap about"><img loading="lazy" src="{PH["about"]}" alt="Business owner checking registration status on a tablet">
+<div><h2>About Legal Wegal</h2><p class="lead">We help founders, small businesses and professionals across India get registered, licensed and compliant without office visits or confusing fees.</p>
+<ul class="tick"><li>Company, LLP, GST, trademark, FSSAI, IEC, BIS and more under one roof</li><li>Every client gets a relationship manager on WhatsApp</li><li>Government fees charged at actual cost, with receipts</li><li>Client portal to upload, track, pay and download certificates</li></ul>
+<p style="margin-top:16px"><a class="btn btn-p" href="/about/">Know more</a> <a class="btn btn-g" href="https://wa.me/{WA}">Chat on WhatsApp</a></p></div></div></section>
+<section style="background:var(--soft)"><div class="wrap"><h2>Why choose Legal Wegal</h2><div class="why">
+<div><i>🧑‍💼</i><b>Dedicated expert</b></div><div><i>🏷️</i><b>Transparent pricing</b></div><div><i>⚡</i><b>Fast filing</b></div><div><i>🔒</i><b>Secure documents</b></div><div><i>🔔</i><b>Renewal reminders</b></div><div><i>📲</i><b>Updates on WhatsApp</b></div><div><i>🧾</i><b>Receipts for every fee</b></div><div><i>🤝</i><b>Partner program for CAs</b></div><div><i>🇮🇳</i><b>Service across India</b></div></div></div></section>
+<section><div class="wrap"><div class="stats"><div><b>{len([s for s, d in SVC.items() if not d.get("hub") and not d.get("special")])}+</b><span>services</span></div><div><b>100%</b><span>online process</span></div><div><b>11–7</b><span>Mon–Sat support</span></div><div><b>₹0</b><span>first consultation</span></div></div></div></section>
+<section><div class="wrap cols"><div><h2>How it works</h2><ol class="steps"><li><b>Tell us what you need</b>: enquire online or on WhatsApp; an expert confirms the exact price.</li><li><b>Upload documents</b> from your phone in the client portal.</li><li><b>We prepare and file</b> with the government and handle any queries.</li><li><b>Done</b>: certificate on WhatsApp and in your portal, with renewal reminders later.</li></ol></div>
+<img class="ph" loading="lazy" src="{PH["docs"]}" alt="Client signing registration documents with an adviser" style="height:100%;max-height:420px"></div></section>
+<section style="background:var(--soft)"><div class="wrap"><h2>All services</h2>{cats}</div></section>
+<section><div class="wrap cols"><img class="ph" loading="lazy" src="{PH["meet"]}" alt="Consultant meeting a business owner" style="max-height:380px">
+<div><h2>Partner with Legal Wegal</h2><p class="lead">For CAs, accountants, consultants and agents: earn 20% of our fee on every client you refer, track their status live and get paid on time.</p><p><a class="btn btn-p" href="/partners/">Become a partner</a> <a class="btn btn-g" href="/Login/">Client login</a></p>
+<h3 style="color:var(--brand);margin-top:22px">Happy with our service?</h3><p class="small">Read or leave a review on Google.</p><a class="btn btn-g" href="https://g.page/r/CVpQ2RBis-UtEAE/review" rel="noopener">⭐ Google reviews</a></div></div></section>
+<section><div class="wrap" style="max-width:860px"><h2>Common questions</h2>
+<details><summary>How much does it cost?</summary><p>Each service page shows our fee and lists the government fees separately. You get an exact quote before paying anything.</p></details>
+<details><summary>Do I need to visit an office?</summary><p>No. Everything is online: upload documents from your phone and get updates on WhatsApp.</p></details>
+<details><summary>How do I track my application?</summary><p>Log in to the client portal with your mobile number and the code we send on WhatsApp.</p></details>
+<details><summary>Is Legal Wegal a government website?</summary><p>No. Legal Wegal is a private facilitation provider. Registrations are issued by the respective government authorities.</p></details></div></section>
+<section style="border:0"><div class="wrap"><div class="cta"><h2>Talk to an expert today, free</h2><span><a class="btn" style="background:#fff;color:var(--brand)" href="tel:{PHONE}">Call {PHONE_TXT}</a> <a class="btn btn-wa" href="https://wa.me/{WA}">WhatsApp</a></span></div></div></section>
+</main>
+<script>var LWF={finder},LWN={names};function lwFind(ev){{ev.preventDefault();var q=document.getElementById('fq').value,out=[];LWF.forEach(function(r){{if(new RegExp(r[0],'i').test(q))r[1].forEach(function(s){{if(out.indexOf(s)<0&&LWN[s])out.push(s)}})}});document.getElementById('fres').innerHTML=out.length?out.map(function(s){{return '<a class="chip" style="text-decoration:none" href="/services/'+s+'/">'+LWN[s]+' →</a>'}}).join(''):'<span class="chip">Tell us in the form and an expert will suggest the right services.</span>';return false}}</script>"""
+    org = {"@context": "https://schema.org", "@type": "ProfessionalService", "name": "Legal Wegal", "url": SITE + "/", "telephone": PHONE, "email": "legalwegal.com@gmail.com", "areaServed": "IN", "priceRange": "₹₹", "image": PH["hero"]}
+    write("index.html", page("/", "Legal Wegal – Company, GST, Trademark & FSSAI Registration Online in India",
+          "Register your company, GST, trademark, FSSAI, IEC and more online with Legal Wegal. Clear prices, expert help on WhatsApp and live tracking in your client portal.", body, [org], preview), preview)
