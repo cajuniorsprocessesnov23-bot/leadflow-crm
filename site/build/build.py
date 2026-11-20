@@ -87,6 +87,11 @@ _IP = {
 def ICO(name, size=24):
     return f'<svg class="ico" width="{size}" height="{size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{_IP.get(name, _IP["lic"])}</svg>'
 
+# Google Analytics (GA4 property "Legal Wegal website", Google tag GTM-TWZJFC9G) – live site only.
+GTAG = ('<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-TWZJFC9G"></script>'
+        '<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());'
+        'document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[href]");if(!a)return;var h=a.getAttribute("href")||"";'
+        'if(h.indexOf("tel:")===0)gtag("event","call_click",{link_url:h});else if(h.indexOf("wa.me")>-1)gtag("event","whatsapp_click",{link_url:h});});</script>')
 FOUNDER = ("kunal-ahuja-founder-ceo-legal-wegal.webp", 393, 487, "Kunal Ahuja, Founder and CEO of Legal Wegal")
 
 PHONE, PHONE_TXT, WA = "+919370077727", "+91 93700 77727", "919370077727"
@@ -297,7 +302,7 @@ def lead_form(service_name, title="Get a free consultation"):
 def page(path, title, desc, body, schema=None, preview=True):
     canon = SITE + (path if path.endswith("/") else path + "/")
     ld = "".join(f'<script type="application/ld+json">{json.dumps(s, ensure_ascii=False)}</script>' for s in (schema or []))
-    return f"""<!DOCTYPE html><html lang="en-IN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+    return f"""<!DOCTYPE html><html lang="en-IN"><head><meta charset="utf-8">{"" if preview else GTAG}<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{e(title)}</title><meta name="description" content="{e(desc)}"><link rel="canonical" href="{e(canon)}">
 {'<meta name="robots" content="noindex">' if preview else '<meta name="robots" content="index,follow">'}
 <meta property="og:title" content="{e(title)}"><meta property="og:description" content="{e(desc)}"><meta property="og:url" content="{e(canon)}"><meta property="og:type" content="website"><meta property="og:site_name" content="Legal Wegal">
