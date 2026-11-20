@@ -93,7 +93,12 @@ Deno.serve(async (req: Request) => {
         components = [{ type: "BODY", text, ...(examples.length ? { example: { body_text: [examples] } } : {}) }];
         if (typeof input?.footer === "string" && input.footer.trim()) components.push({ type: "FOOTER", text: input.footer.trim().slice(0, 60) });
         const btns: string[] = Array.isArray(input?.buttons) ? input.buttons.map(String).slice(0, 3) : [];
-        if (btns.length) components.push({ type: "BUTTONS", buttons: btns.map((t) => ({ type: "QUICK_REPLY", text: t.slice(0, 25) })) });
+        // Optional link button: { url_button: { text, url: "https://…/?t={{1}}", example: "https://…/?t=abc" } }
+        const ub = input?.url_button;
+        const linkBtn = ub && typeof ub.text === "string" && /^https:\/\/[^\s]+$/.test(String(ub.url || ""))
+          ? [{ type: "URL", text: String(ub.text).slice(0, 25), url: String(ub.url), ...(String(ub.url).includes("{{1}}") ? { example: [String(ub.example || ub.url.replace("{{1}}", "sample"))] } : {}) }] : [];
+        const allBtns = [...linkBtn, ...btns.map((t) => ({ type: "QUICK_REPLY", text: t.slice(0, 25) }))];
+        if (allBtns.length) components.push({ type: "BUTTONS", buttons: allBtns });
       }
       const r = await fetch(`${GRAPH}/${WABA_ID}/message_templates`, {
         method: "POST",
