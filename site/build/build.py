@@ -92,7 +92,6 @@ footer h4{color:#fff;margin:0 0 10px;font-size:14px}footer a{display:block;color
 .mbar{display:none}@media(max-width:700px){.mbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:30;background:#fff;border-top:1px solid var(--line);padding:8px;gap:8px}.mbar a{flex:1}body{padding-bottom:64px}.fab{display:none}}
 .fab{position:fixed;right:18px;bottom:18px;z-index:30;width:54px;height:54px;border-radius:50%;background:#1fa855;display:grid;place-items:center;box-shadow:0 8px 20px rgba(0,0,0,.2)}
 .preview{background:var(--accent);color:#3b2a00;text-align:center;font-size:13px;padding:5px}
-.lwmark{display:block;width:118px;height:70px;background:url("https://www.legalwegal.com/images/LEGAL_WIGAL-removebg-preview.png") -44px -72px/200px 200px no-repeat}.lwtxt{position:absolute;left:-9999px}
 .topbar{background:var(--brand);color:#dbe4f3;font-size:13px}.topbar .wrap{display:flex;gap:18px;align-items:center;height:36px}.topbar a{color:#fff;text-decoration:none}.topbar .r{margin-left:auto;display:flex;gap:16px}
 @media(max-width:700px){.topbar .hide-m{display:none}}
 .logo b{background:var(--brand2);color:#fff}.btn-p{background:var(--brand2)}.btn-p:hover{background:#d95a14}
@@ -164,7 +163,7 @@ def page(path, title, desc, body, schema=None, preview=True):
 <meta name="theme-color" content="#1d1250"><link rel="icon" href="/favicon.png">{ld}<style>{CSS}</style></head><body>
 {'<div class="preview">Preview of the new Legal Wegal website – not live yet</div>' if preview else ''}
 <div class="topbar"><div class="wrap"><a href="tel:{PHONE}">📞 {PHONE_TXT}</a><a class="hide-m" href="mailto:legalwegal.com@gmail.com">✉ legalwegal.com@gmail.com</a><span class="hide-m">Mon–Sat, 11 AM – 7 PM</span><span class="r"><a href="/partners/">Partner with us</a><a href="/Login/">Client login</a></span></div></div>
-<header><div class="wrap nav"><a class="logo" href="/" aria-label="Legal Wegal home"><span class="lwmark" role="img" aria-label="Legal Wegal logo"></span><span class="lwtxt">Legal Wegal</span></a><nav class="menu">{nav_html()}</nav>
+<header><div class="wrap nav"><a class="logo" href="/"><b>LW</b>Legal Wegal</a><nav class="menu">{nav_html()}</nav>
 <a class="btn btn-g" href="tel:{PHONE}">Call</a><a class="btn btn-p" href="#enquire">Free consultation</a></div></header>
 {body}{footer_html()}
 <a class="fab" href="https://wa.me/{WA}?text={e('Hi Legal Wegal, I need help')}" aria-label="WhatsApp"><svg width="26" height="26" viewBox="0 0 24 24" fill="#fff"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.1z"/></svg></a>

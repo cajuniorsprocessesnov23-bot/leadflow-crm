@@ -70,7 +70,7 @@ def core_pages(preview):
 <ul class="tick"><li>Phone & WhatsApp: <a href="tel:{PHONE}">{PHONE_TXT}</a></li><li>Email: <a href="mailto:legalwegal.com@gmail.com">legalwegal.com@gmail.com</a></li><li>Hours: Monday–Saturday, 11 AM – 7 PM</li><li>Service: online across India</li></ul>
 <p><a class="btn btn-wa" href="https://wa.me/{WA}">Chat on WhatsApp</a></p>""", preview)
     simple("/our-team/", "Our Team – Legal Wegal", "Meet the Legal Wegal team of business registration, tax and compliance experts.", "Our team",
-        """<div style="display:flex;gap:18px;align-items:center;margin:10px 0 18px"><img src="https://www.legalwegal.com/images/KA.png" alt="Kunal Ahuja" style="width:130px;height:130px;object-fit:cover;object-position:top;border-radius:50%;background:#e8eef8"><div><b style="font-size:18px;color:var(--brand)">Kunal Ahuja</b><br><span class="small">Legal Wegal</span></div></div><p class="lead">Our team of company secretaries, accountants, tax and trademark specialists and client relationship managers works together on every file.</p>
+        """<p class="lead">Our team of company secretaries, accountants, tax and trademark specialists and client relationship managers works together on every file.</p>
 <p>Each client is assigned a relationship manager who stays in touch on WhatsApp, and an expert who prepares and files the work.</p>""", preview)
     simple("/policy/privacy-policy/", "Privacy Policy – Legal Wegal", "How Legal Wegal collects, uses and protects your personal data.", "Privacy policy",
         """<p class="small">Last updated: 18 November 2026</p>
@@ -284,7 +284,7 @@ def home(preview):
 <main>
 <section style="border:0"><div class="wrap"><div class="feat"><div><i>💬</i><span><b>Expert on WhatsApp</b>A dedicated expert answers your questions and guides every step.</span></div><div><i>💰</i><span><b>Clear, fixed fees</b>Our fee and every government fee are shown before you pay.</span></div><div><i>📱</i><span><b>100% online</b>Upload documents from your phone and track progress in your portal.</span></div></div></div></section>
 <section style="background:var(--soft)"><div class="wrap"><h2>Popular services</h2><div class="grid">{cards}</div></div></section>
-<section><div class="wrap about"><div style="background:linear-gradient(160deg,#fff1e8,#e8eef8);border-radius:18px;display:flex;align-items:flex-end;justify-content:center;min-height:320px"><img loading="lazy" src="https://www.legalwegal.com/images/KA.png" alt="Kunal Ahuja, Legal Wegal" style="max-height:340px;width:auto;box-shadow:none;border-radius:0"></div>
+<section><div class="wrap about"><img loading="lazy" src="{PH["about"]}" alt="Business owner checking registration status on a tablet">
 <div><h2>About Legal Wegal</h2><p class="lead">We help founders, small businesses and professionals across India get registered, licensed and compliant without office visits or confusing fees.</p>
 <ul class="tick"><li>Company, LLP, GST, trademark, FSSAI, IEC, BIS and more under one roof</li><li>Every client gets a relationship manager on WhatsApp</li><li>Government fees charged at actual cost, with receipts</li><li>Client portal to upload, track, pay and download certificates</li></ul>
 <p style="margin-top:16px"><a class="btn btn-p" href="/about/">Know more</a> <a class="btn btn-g" href="https://wa.me/{WA}">Chat on WhatsApp</a></p></div></div></section>
