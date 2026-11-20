@@ -80,11 +80,21 @@ Deno.serve(async (req: Request) => {
       }
     }
 
-    const params: string[] = Array.isArray(m.params) ? m.params.map((p: unknown) => String(p ?? "-").slice(0, 900) || "-") : [];
+    // params: either a plain array of body texts, or { body: [...], header_document?: {link, filename}, button_url?: "suffix" }
+    const P: any = m.params ?? [];
+    const bodyArr: unknown[] = Array.isArray(P) ? P : (Array.isArray(P.body) ? P.body : []);
+    const params: string[] = bodyArr.map((p: unknown) => String(p ?? "-").slice(0, 900) || "-");
+    const components: unknown[] = [];
+    if (!Array.isArray(P) && P.header_document?.link) {
+      components.push({ type: "header", parameters: [{ type: "document", document: { link: String(P.header_document.link), filename: String(P.header_document.filename || "document.pdf").slice(0, 120) } }] });
+    }
+    if (params.length) components.push({ type: "body", parameters: params.map((text) => ({ type: "text", text })) });
+    if (!Array.isArray(P) && P.button_url) {
+      components.push({ type: "button", sub_type: "url", index: "0", parameters: [{ type: "text", text: String(P.button_url).slice(0, 200) }] });
+    }
     const payload = {
       messaging_product: "whatsapp", recipient_type: "individual", to: m.recipient_phone, type: "template",
-      template: { name: tpl, language: { code: approved.get(tpl) || "en" },
-        components: params.length ? [{ type: "body", parameters: params.map((text) => ({ type: "text", text })) }] : [] },
+      template: { name: tpl, language: { code: approved.get(tpl) || "en" }, components },
     };
     const r = await fetch(`${GRAPH}/${PHONE_NUMBER_ID}/messages`, { method: "POST", headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" }, body: JSON.stringify(payload) });
     const j = await r.json().catch(() => ({}));
