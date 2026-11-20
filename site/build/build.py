@@ -58,6 +58,35 @@ VIDEOS_HTML = ('<section style="background:var(--soft)"><div class="wrap"><h2>Cu
     # Videos are large: load and play (muted) only when scrolled into view; pause when out of view.
     '<script>(function(){var vs=document.querySelectorAll("video.lwv");function on(v){if(!v.src){v.src=v.dataset.src}var p=v.play();p&&p.catch(function(){})}'
     'if(!("IntersectionObserver" in window)){vs.forEach(on);return}var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)on(e.target);else e.target.pause()})},{threshold:.35});vs.forEach(function(v){io.observe(v)})})();</script>')
+
+# Line icons (24px grid, 1.75 stroke) used instead of emoji
+_IP = {
+ "co": '<path d="M4 21V5a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v16M15 9h4a1 1 0 0 1 1 1v11M3 21h18M8 8h3M8 12h3M8 16h3"/>',
+ "gst": '<path d="M6 3h12v18l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6M9 16h3"/>',
+ "tm": '<circle cx="12" cy="12" r="9"/><path d="M7.5 9.5h4M9.5 9.5v5M13 14.5v-5l1.75 2.6 1.75-2.6v5"/>',
+ "food": '<path d="M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 3c-2 0-3 2.5-3 6h3v12"/>',
+ "globe": '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/>',
+ "tax": '<path d="M3 21h18M6 17v-5M11 17V7M16 17v-8M20 17v-3"/>',
+ "lic": '<path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8zM14 3v5h5M8 13h8M8 17h5"/>',
+ "comp": '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M8.5 15.5l2 2 4-4"/>',
+ "legal": '<path d="M12 3v18M7 21h10M4 7h16M6 7l-3 7a3 3 0 0 0 6 0zM18 7l-3 7a3 3 0 0 0 6 0z"/>',
+ "other": '<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',
+ "chat": '<path d="M21 12a8 8 0 0 1-11.8 7L4 20l1.1-4.6A8 8 0 1 1 21 12z"/>',
+ "rupee": '<path d="M7 4h10M7 8.5h10M7 4c5 0 7 2 7 4.3S12 13 7 13l7 7"/>',
+ "phone": '<rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/>',
+ "user": '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+ "tag": '<path d="M3 12V4a1 1 0 0 1 1-1h8l9 9-9 9z"/><circle cx="8" cy="8" r="1.5"/>',
+ "bolt": '<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>',
+ "lock": '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+ "bell": '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8M10 20a2 2 0 0 0 4 0"/>',
+ "hand": '<path d="M8 12l3 3a2 2 0 0 0 3-3l-3-3M2 11l5-5 5 3 5-3 5 5-6 6M2 11l6 6"/>',
+ "pin": '<path d="M12 21s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/>',
+ "check": '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+ "star": '<path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z"/>',
+}
+def ICO(name, size=24):
+    return f'<svg class="ico" width="{size}" height="{size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{_IP.get(name, _IP["lic"])}</svg>'
+
 FOUNDER = ("kunal-ahuja-founder-ceo-legal-wegal.webp", 393, 487, "Kunal Ahuja, Founder and CEO of Legal Wegal")
 
 PHONE, PHONE_TXT, WA = "+919370077727", "+91 93700 77727", "919370077727"
@@ -155,6 +184,76 @@ h1{color:var(--brand)}.svc:hover{border-color:#f7b48c}.price{color:var(--brand)}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;background:var(--brand);color:#fff;border-radius:18px;padding:22px}@media(max-width:700px){.stats{grid-template-columns:1fr 1fr}}
 .stats div{text-align:center}.stats b{display:block;font-size:28px;color:var(--accent)}.stats span{font-size:13px;color:#dbe4f3}
 .svc .ic{font-size:24px}.cta{background:linear-gradient(90deg,#f26b21,#ff9a3c);color:#fff;border-radius:18px;padding:26px;display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}.cta h2{color:#fff;margin:0}
+/* ===== v3 theme (21 Nov): "stamped & sorted" – ink indigo from the logo, saffron action colour, seal green for done ===== */
+:root{--ink:#1b1840;--muted:#5d5b78;--line:#e4e3f0;--soft:#f5f5fb;--brand:#1e1650;--ind:#3d2fb5;--brand2:#f2701d;--accent:#ffd27a;--ok:#0e9f6e;--paper:#ffffff;--r:14px;--sh:0 1px 2px rgba(30,22,80,.06),0 12px 32px -12px rgba(30,22,80,.18)}
+body{font-family:Figtree,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:#fff;-webkit-font-smoothing:antialiased}
+h1,h2,h3,.price,.stats b{font-family:"Bricolage Grotesque",Figtree,system-ui,sans-serif}
+h1{color:var(--brand);letter-spacing:-.02em;font-weight:800}main h2{color:var(--brand);font-weight:700;letter-spacing:-.015em;font-size:clamp(25px,2.8vw,34px);line-height:1.15;margin:0 0 18px}
+a{color:var(--ind)}:focus-visible{outline:3px solid var(--brand2);outline-offset:2px;border-radius:6px}
+.btn{border-radius:999px;padding:13px 22px;font:600 15px/1.1 Figtree,system-ui,sans-serif;transition:transform .15s ease,background .15s ease,box-shadow .15s ease}
+.btn-p{background:var(--brand2);box-shadow:0 8px 20px -8px rgba(242,112,29,.7)}.btn-p:hover{background:#dc5f10;transform:translateY(-1px)}
+.btn-g{border:1.5px solid var(--line);color:var(--brand)}.btn-g:hover{border-color:var(--brand)}.btn-wa{background:#159c4f}.btn-wa:hover{background:#0f8743}
+.topbar{background:var(--brand)}.topbar .wrap{height:34px}
+header{background:rgba(255,255,255,.92);border-bottom:1px solid var(--line)}.nav{height:72px}
+.dd>a{color:var(--ink);font-weight:500;border-radius:8px}.dd>a:hover{background:var(--soft);color:var(--brand)}
+.dd .pan{border-radius:14px;box-shadow:var(--sh);padding:10px}.pan a:hover{background:var(--soft);color:var(--brand)}
+.mtog{border-radius:12px}
+.hero{background:radial-gradient(1200px 400px at 85% -10%,#ece9ff 0%,rgba(236,233,255,0) 60%),#fff;border-bottom:1px solid var(--line)}
+.chip{border-radius:999px;border-color:var(--line);color:var(--muted);background:#fff}
+.card{border-radius:20px;border-color:var(--line);box-shadow:var(--sh)}
+.card input,.card textarea,.card select{border-radius:12px;border:1.5px solid var(--line);transition:border-color .15s}.card input:focus,.card textarea:focus{border-color:var(--ind);outline:none;box-shadow:0 0 0 4px rgba(61,47,181,.12)}
+.price{color:var(--brand);letter-spacing:-.02em}
+main section{border-bottom:0;padding:64px 0}
+.svc{border-radius:var(--r);border-color:var(--line);transition:border-color .15s,box-shadow .15s,transform .15s}.svc:hover{border-color:#cdc8f5;box-shadow:var(--sh);transform:translateY(-2px)}
+.svc .ic{display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:#efedfd;color:var(--ind);margin-bottom:4px}
+.svc h3{font-size:17px;color:var(--brand);font-weight:700}.svc b{color:var(--brand2)}
+ul.tick li:before{background:#e3f6ee;color:var(--ok)}
+ol.steps li{border-radius:14px}ol.steps li:before{background:var(--brand);color:#fff}
+details{border-radius:14px;transition:background .2s}details[open]{background:var(--soft)}summary{list-style:none;position:relative;padding-right:28px}summary::-webkit-details-marker{display:none}
+summary:after{content:"+";position:absolute;right:2px;top:-3px;font-size:22px;color:var(--ind);transition:transform .2s}details[open] summary:after{transform:rotate(45deg)}
+table.fees th{background:var(--soft);color:var(--brand)}
+footer{background:var(--brand);color:#cfcbe8}.legal{border-top-color:rgba(255,255,255,.12)}
+.ico{display:block}
+/* hero v3 */
+.hx{position:relative;overflow:hidden;background:radial-gradient(900px 480px at 88% 10%,#e9e6ff 0%,rgba(233,230,255,0) 62%),radial-gradient(700px 380px at -10% 110%,#fff1e6 0%,rgba(255,241,230,0) 60%),#fbfbfe}
+.hx .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center;padding-top:56px;padding-bottom:84px}
+.hx h1{font-size:clamp(36px,5.2vw,62px);line-height:1.02;margin:0 0 18px;max-width:14ch}
+.hx .lead{font-size:18.5px;max-width:52ch;color:var(--muted)}
+.hx .find{display:flex;gap:8px;margin-top:24px;max-width:560px;background:#fff;border:1.5px solid var(--line);border-radius:999px;padding:6px;box-shadow:var(--sh)}
+.hx .find input{flex:1;border:0;padding:10px 14px;font:inherit;background:transparent;min-width:0}.hx .find input:focus{outline:none}
+.hx .ctas{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.trust{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:22px;color:var(--muted);font-size:14px}.trust span{display:inline-flex;align-items:center;gap:6px}.trust .ico{color:var(--ok)}
+/* the certificate: the one animated moment */
+.cert{position:relative;background:#fff;border-radius:22px;padding:26px 26px 22px;box-shadow:0 2px 4px rgba(30,22,80,.05),0 40px 80px -30px rgba(30,22,80,.35);border:1px solid var(--line);transform:rotate(-1.5deg);max-width:440px;justify-self:end;width:100%}
+.cert:before{content:"";position:absolute;inset:10px;border:1.5px dashed #d9d5f3;border-radius:16px;pointer-events:none}
+.cert .ch{display:flex;align-items:center;gap:12px;margin-bottom:14px}.cert .ch img{height:40px;width:auto}.cert .ch b{display:block;font-family:"Bricolage Grotesque",sans-serif;color:var(--brand);font-size:18px;line-height:1.1}.cert .ch small{color:var(--muted);font-size:12.5px}
+.cert .bars i{display:block;height:9px;border-radius:6px;background:#eeedf6;margin:9px 0}.cert .bars i:nth-child(2){width:82%}.cert .bars i:nth-child(3){width:64%}
+.cert ol{list-style:none;padding:0;margin:16px 0 0;display:grid;gap:10px}
+.cert li{display:flex;align-items:center;gap:10px;font-weight:600;color:var(--ink);font-size:15px;opacity:0;transform:translateY(6px);animation:lwIn .45s ease forwards}
+.cert li span{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#e3f6ee;color:var(--ok);flex:none}
+.cert li:nth-child(1){animation-delay:.35s}.cert li:nth-child(2){animation-delay:.75s}.cert li:nth-child(3){animation-delay:1.15s}
+.seal{position:absolute;right:-18px;bottom:-26px;width:132px;height:132px;border-radius:50%;display:grid;place-items:center;text-align:center;color:var(--ok);border:3px solid var(--ok);background:rgba(255,255,255,.88);font:800 13px/1.15 "Bricolage Grotesque",sans-serif;letter-spacing:.06em;transform:rotate(-14deg) scale(1);box-shadow:inset 0 0 0 6px #fff,inset 0 0 0 8px rgba(14,159,110,.5);opacity:0;animation:lwStamp .5s cubic-bezier(.2,1.6,.4,1) 1.6s forwards}
+.seal small{display:block;font-weight:600;font-size:10.5px;letter-spacing:.02em;margin-top:3px}
+@keyframes lwIn{to{opacity:1;transform:none}}
+@keyframes lwStamp{0%{opacity:0;transform:rotate(-14deg) scale(1.9)}60%{opacity:1}100%{opacity:1;transform:rotate(-14deg) scale(1)}}
+@media(prefers-reduced-motion:reduce){.cert li,.seal{animation:none;opacity:1;transform:none}.seal{transform:rotate(-14deg)}.btn,.svc{transition:none}}
+.tiles2{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-top:-46px;position:relative;z-index:2}
+.tile2{display:flex;flex-direction:column;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px 10px 16px;text-decoration:none;color:var(--brand);font-weight:600;font-size:14.5px;box-shadow:var(--sh);transition:transform .15s,border-color .15s}
+.tile2:hover{transform:translateY(-3px);border-color:#cdc8f5}.tile2 span{display:grid;place-items:center;width:48px;height:48px;border-radius:14px;background:#efedfd;color:var(--ind)}
+.tile2:nth-child(even) span{background:#fff1e6;color:#d65c0c}
+.ask{display:grid;grid-template-columns:1fr .9fr;gap:40px;align-items:start}
+.pts{display:grid;gap:14px;margin-top:22px}.pts div{display:flex;gap:14px;align-items:flex-start}.pts div>span{display:grid;place-items:center;width:42px;height:42px;border-radius:12px;background:#efedfd;color:var(--ind);flex:none}.pts b{display:block;color:var(--brand)}.pts p{margin:2px 0 0;color:var(--muted);font-size:15px}
+.why2{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--line);border-radius:20px;overflow:hidden;background:#fff}
+.why2 div{display:flex;gap:12px;align-items:center;padding:20px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);color:var(--brand);font-weight:600}.why2 div:nth-child(3n){border-right:0}.why2 div:nth-last-child(-n+3){border-bottom:0}.why2 .ico{color:var(--ind);flex:none}
+.band{background:var(--brand);color:#fff;border-radius:24px;padding:36px;display:flex;gap:20px;align-items:center;justify-content:space-between;flex-wrap:wrap;position:relative;overflow:hidden}
+.band:after{content:"";position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;border:2px dashed rgba(255,255,255,.18)}
+.band h2{color:#fff;margin:0}.band p{margin:6px 0 0;color:#cfcbe8}
+.trusted{display:flex;gap:34px;align-items:center;justify-content:center;flex-wrap:wrap}.trusted img{height:54px;width:auto;object-fit:contain;filter:grayscale(1) contrast(1.05);opacity:.75;transition:filter .2s,opacity .2s}.trusted img:hover{filter:none;opacity:1}
+.lwv{background:linear-gradient(160deg,#2b2170,#1e1650) !important}
+.sbanner{border-radius:20px}
+.tm{border-radius:18px}
+@media(max-width:960px){.hx .wrap{grid-template-columns:1fr;gap:36px;padding-top:34px;padding-bottom:70px}.cert{justify-self:center;max-width:380px}.tiles2{grid-template-columns:repeat(3,1fr);margin-top:-40px}.ask{grid-template-columns:1fr}.why2{grid-template-columns:1fr 1fr}.why2 div:nth-child(3n){border-right:1px solid var(--line)}.why2 div:nth-child(2n){border-right:0}.why2 div:nth-last-child(-n+3){border-bottom:1px solid var(--line)}.why2 div:nth-last-child(-n+1){border-bottom:0}}
+@media(max-width:700px){main section{padding:44px 0}.hx h1{font-size:36px}.hx .lead{font-size:16.5px}.seal{width:104px;height:104px;font-size:11px;right:-8px;bottom:-22px}.cert{padding:20px}.band{padding:26px}.trusted{gap:22px}.trusted img{height:40px}.tile2{font-size:13px;padding:14px 6px}}
 """
 
 def nav_html():
@@ -163,7 +262,7 @@ def nav_html():
         items = [(s, d) for s, d in SVC.items() if d["c"] == c and not d.get("hub") and not d.get("special")]
         items.sort(key=lambda x: x[1]["n"])
         links = "".join(f'<a href="/services/{s}/">{e(d["n"])}</a>' for s, d in items[:14])
-        out.append(f'<div class="dd"><a href="/services/{HUB[c]}/">{e(label.split(" &")[0])}</a><div class="pan">{links}<a href="/services/{HUB[c]}/"><b>All {e(label)} →</b></a></div></div>')
+        out.append(f'<div class="dd"><a href="/services/{HUB[c]}/">{e(label.split(" &")[0])}</a><div class="pan">{links}<a href="/services/{HUB[c]}/"><b>All {e(label)}</b></a></div></div>')
     return "".join(out)
 
 def footer_html():
@@ -202,7 +301,7 @@ def page(path, title, desc, body, schema=None, preview=True):
 <title>{e(title)}</title><meta name="description" content="{e(desc)}"><link rel="canonical" href="{e(canon)}">
 {'<meta name="robots" content="noindex">' if preview else '<meta name="robots" content="index,follow">'}
 <meta property="og:title" content="{e(title)}"><meta property="og:description" content="{e(desc)}"><meta property="og:url" content="{e(canon)}"><meta property="og:type" content="website"><meta property="og:site_name" content="Legal Wegal">
-<meta name="theme-color" content="#1d1250"><link rel="icon" href="/favicon.png">{ld}<style>{CSS}</style></head><body>
+<meta name="theme-color" content="#1e1650"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="icon" href="/favicon.png">{ld}<style>{CSS}</style></head><body>
 {'<div class="preview">Preview of the new Legal Wegal website – not live yet</div>' if preview else ''}
 <div class="topbar"><div class="wrap"><a href="tel:{PHONE}">📞 {PHONE_TXT}</a><a class="hide-m" href="mailto:legalwegal.com@gmail.com">✉ legalwegal.com@gmail.com</a><span class="hide-m">Mon–Sat, 11 AM – 7 PM</span><span class="r"><a href="/partners/">Partner with us</a><a href="/Login/">Client login</a></span></div></div>
 <header><div class="wrap nav"><a class="logo" href="/" aria-label="Legal Wegal home"><img src="{IMG}legal-wegal-logo.webp?v=2" alt="Legal Wegal" width="90" height="56"></a><nav class="menu" id="mmenu">{nav_html()}</nav>
