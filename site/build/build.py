@@ -134,7 +134,7 @@ h1{color:var(--brand)}.svc:hover{border-color:#f7b48c}.price{color:var(--brand)}
 .feat div{display:flex;gap:14px;align-items:flex-start;background:var(--soft);border-radius:14px;padding:18px}.feat i{font-style:normal;font-size:26px}.feat b{display:block;color:var(--brand)}
 .why{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}@media(max-width:800px){.why{grid-template-columns:1fr 1fr}}
 .why div{text-align:center;border:1px solid var(--line);border-radius:14px;padding:18px 12px;background:#fff}.why i{font-style:normal;font-size:28px;display:block;margin-bottom:6px}.why b{color:var(--brand);font-size:14.5px}
-.logo img{height:44px;width:auto}.sbanner{width:100%;height:auto;max-height:420px;object-fit:contain;border-radius:16px;background:#fff;box-shadow:0 12px 30px rgba(11,42,91,.12)}
+.logo img{height:56px;width:auto}.sbanner{width:100%;height:auto;max-height:420px;object-fit:contain;border-radius:16px;background:#fff;box-shadow:0 12px 30px rgba(11,42,91,.12)}
 .bstrip{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:8px}.bstrip a{flex:0 0 min(78%,420px);scroll-snap-align:start;border-radius:14px;overflow:hidden;box-shadow:0 8px 22px rgba(11,42,91,.12);background:#fff}.bstrip img{width:100%;height:210px;object-fit:cover;display:block}.bstrip span{display:block;padding:10px 12px;font-weight:700;color:var(--brand)}
 .founder{margin:0;text-align:center}.founder img{width:100%;max-width:340px;height:auto;border-radius:18px;background:linear-gradient(180deg,#eef3fb,#dfe8f6);box-shadow:0 18px 40px rgba(11,42,91,.15)}.founder figcaption{margin-top:10px;font-weight:700;color:var(--brand)}.founder figcaption small{display:block;font-weight:500;color:var(--muted,#5b6475)}
 .clients{display:flex;gap:26px;align-items:center;justify-content:center;flex-wrap:wrap}.clients img{height:90px;width:auto}
@@ -193,7 +193,7 @@ def page(path, title, desc, body, schema=None, preview=True):
 <meta name="theme-color" content="#1d1250"><link rel="icon" href="/favicon.png">{ld}<style>{CSS}</style></head><body>
 {'<div class="preview">Preview of the new Legal Wegal website – not live yet</div>' if preview else ''}
 <div class="topbar"><div class="wrap"><a href="tel:{PHONE}">📞 {PHONE_TXT}</a><a class="hide-m" href="mailto:legalwegal.com@gmail.com">✉ legalwegal.com@gmail.com</a><span class="hide-m">Mon–Sat, 11 AM – 7 PM</span><span class="r"><a href="/partners/">Partner with us</a><a href="/Login/">Client login</a></span></div></div>
-<header><div class="wrap nav"><a class="logo" href="/"><img src="{IMG}legal-wegal-logo.webp?v=2" alt="Legal Wegal logo" width="71" height="44">Legal Wegal</a><nav class="menu">{nav_html()}</nav>
+<header><div class="wrap nav"><a class="logo" href="/" aria-label="Legal Wegal home"><img src="{IMG}legal-wegal-logo.webp?v=2" alt="Legal Wegal" width="90" height="56"></a><nav class="menu">{nav_html()}</nav>
 <a class="btn btn-g" href="tel:{PHONE}">Call</a><a class="btn btn-p" href="#enquire">Free consultation</a></div></header>
 {body}{footer_html()}
 <a class="fab" href="https://wa.me/{WA}?text={e('Hi Legal Wegal, I need help')}" aria-label="WhatsApp"><svg width="26" height="26" viewBox="0 0 24 24" fill="#fff"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.1z"/></svg></a>
