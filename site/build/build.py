@@ -92,6 +92,9 @@ CSS = """
 a{color:var(--brand2)}img,svg{display:block}.wrap{max-width:1160px;margin:0 auto;padding:0 20px}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:12px;padding:12px 18px;font:600 15px/1.1 inherit;cursor:pointer;text-decoration:none}
 .btn-p{background:var(--brand2);color:#fff}.btn-g{background:#fff;color:var(--brand);border:1.5px solid var(--line)}.btn-wa{background:#1fa855;color:#fff}
+.mtog{display:none;margin-left:6px;width:44px;height:44px;border:1px solid var(--line);border-radius:10px;background:#fff;font-size:22px;color:var(--brand);cursor:pointer}
+@media(max-width:960px){.mtog{display:block}.nav{gap:8px}.nav .btn-p{margin-left:auto;padding:10px 14px;font-size:14px}body.mopen .menu{display:block;position:absolute;top:100%;left:0;right:0;background:#fff;max-height:75vh;overflow:auto;padding:8px 16px 16px;box-shadow:0 18px 30px rgba(11,42,91,.18);border-top:1px solid var(--line)}body.mopen .menu .dd{display:block;border-bottom:1px solid var(--line)}body.mopen .menu .dd>a{display:block;padding:12px 0;font-weight:700}body.mopen .menu .pan{display:none!important}}
+@media(max-width:700px){body{padding-bottom:64px}.hbanner .chip{font-size:12px}.hbanner h1{font-size:30px}.logo img{height:46px}section{padding:38px 0}h2{font-size:24px}}
 header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.95);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
 .nav{display:flex;align-items:center;gap:18px;height:66px}.logo{display:flex;align-items:center;gap:10px;white-space:nowrap;text-decoration:none;font-weight:800;font-size:19px;color:var(--brand)}
 .logo b{display:grid;place-items:center;width:36px;height:36px;border-radius:10px;background:var(--brand);color:var(--accent);font-size:16px}
@@ -202,8 +205,8 @@ def page(path, title, desc, body, schema=None, preview=True):
 <meta name="theme-color" content="#1d1250"><link rel="icon" href="/favicon.png">{ld}<style>{CSS}</style></head><body>
 {'<div class="preview">Preview of the new Legal Wegal website – not live yet</div>' if preview else ''}
 <div class="topbar"><div class="wrap"><a href="tel:{PHONE}">📞 {PHONE_TXT}</a><a class="hide-m" href="mailto:legalwegal.com@gmail.com">✉ legalwegal.com@gmail.com</a><span class="hide-m">Mon–Sat, 11 AM – 7 PM</span><span class="r"><a href="/partners/">Partner with us</a><a href="/Login/">Client login</a></span></div></div>
-<header><div class="wrap nav"><a class="logo" href="/" aria-label="Legal Wegal home"><img src="{IMG}legal-wegal-logo.webp?v=2" alt="Legal Wegal" width="90" height="56"></a><nav class="menu">{nav_html()}</nav>
-<a class="btn btn-g" href="tel:{PHONE}">Call</a><a class="btn btn-p" href="#enquire">Free consultation</a></div></header>
+<header><div class="wrap nav"><a class="logo" href="/" aria-label="Legal Wegal home"><img src="{IMG}legal-wegal-logo.webp?v=2" alt="Legal Wegal" width="90" height="56"></a><nav class="menu" id="mmenu">{nav_html()}</nav>
+<a class="btn btn-g" href="tel:{PHONE}">Call</a><a class="btn btn-p" href="#enquire">Free consultation</a><button class="mtog" aria-label="Open menu" aria-controls="mmenu" onclick="document.body.classList.toggle('mopen')">☰</button></div></header>
 {body}{footer_html()}
 <a class="fab" href="https://wa.me/{WA}?text={e('Hi Legal Wegal, I need help')}" aria-label="WhatsApp"><svg width="26" height="26" viewBox="0 0 24 24" fill="#fff"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.1z"/></svg></a>
 <div class="mbar"><a class="btn btn-g" href="tel:{PHONE}">Call</a><a class="btn btn-wa" href="https://wa.me/{WA}">WhatsApp</a><a class="btn btn-p" href="#enquire">Enquire</a></div>
